@@ -10,9 +10,9 @@ import {
 } from 'effector';
 
 import { history } from '@lib/routing';
-import { createFetching, Fetching } from '@lib/fetching';
+import { notifyError, notifySuccess } from '@lib/notifications';
+import { Fetching, createFetching } from '@lib/fetching';
 import { createUser } from '@features/session';
-import { notifyError, notifySuccess } from '@features/notifications';
 import { validateEmail, validatePassword, validatePasswordsEqual } from '@lib/validators';
 
 type FormErrorsSchema = {
