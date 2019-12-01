@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useStore } from 'effector-react';
 
 import { styled } from '@theme';
-import { CenteredContent, Logo, SimpleInput, InputLabel, Button, darkTitle } from '@ui';
+import { CenteredContent, SimpleInput, Logo, InputLabel, Button, darkTitle } from '@ui';
 
 import {
   $email,
@@ -15,7 +15,10 @@ import {
   emailChanged,
   passwordChanged,
   confirmPasswordChanged,
-  formSubmitted
+  formSubmitted,
+  formMounted,
+  formUnmounted,
+  signUpFetching
 } from './model';
 
 const handleSubmit = (event: React.SyntheticEvent): void => {
@@ -23,14 +26,69 @@ const handleSubmit = (event: React.SyntheticEvent): void => {
   formSubmitted();
 };
 
+const EmailInput: React.FC = () => {
+  const email: string = useStore($email);
+  const emailError: string | null = useStore($emailError);
+
+  return (
+    <>
+      <InputLabel htmlFor="email">Email</InputLabel>
+      <SimpleInput
+        type="email"
+        id="email"
+        value={email}
+        error={emailError}
+        handleChange={emailChanged}
+      />
+    </>
+  );
+};
+
+const PasswordInput: React.FC = () => {
+  const password: string = useStore($password);
+  const passwordError: string | null = useStore($passwordError);
+
+  return (
+    <>
+      <InputLabel htmlFor="password">Пароль</InputLabel>
+      <SimpleInput
+        type="password"
+        id="password"
+        value={password}
+        error={passwordError}
+        handleChange={passwordChanged}
+      />
+    </>
+  );
+};
+
+const ConfirmPasswordInput: React.FC = () => {
+  const confirmPassword: string = useStore($confirmPassword);
+  const confirmPasswordError: string | null = useStore($confirmPasswordError);
+
+  React.useEffect(() => {
+    formMounted();
+
+    return () => formUnmounted();
+  }, []);
+
+  return (
+    <>
+      <InputLabel htmlFor="confirmPassword">Подтверждение пароля</InputLabel>
+      <SimpleInput
+        type="password"
+        id="confirmPassword"
+        value={confirmPassword}
+        error={confirmPasswordError}
+        handleChange={confirmPasswordChanged}
+      />
+    </>
+  );
+};
+
 const SignUp: React.FC = () => {
-  const email = useStore($email);
-  const emailError = useStore($emailError);
-  const password = useStore($password);
-  const passwordError = useStore($passwordError);
-  const confirmPassword = useStore($confirmPassword);
-  const confirmPasswordError = useStore($confirmPasswordError);
-  const isSubmitEnabled = useStore($isSubmitEnabled);
+  const isSubmitEnabled: boolean = useStore($isSubmitEnabled);
+  const isLoading: boolean = useStore(signUpFetching.isLoading);
 
   return (
     <CenteredContent>
@@ -40,31 +98,15 @@ const SignUp: React.FC = () => {
 
       <Form>
         <Title>Регистрация</Title>
-        <InputLabel htmlFor="email">Email</InputLabel>
-        <SimpleInput
-          type="email"
-          id="email"
-          value={email}
-          error={emailError}
-          handleChange={emailChanged}
-        />
-        <InputLabel htmlFor="password">Пароль</InputLabel>
-        <SimpleInput
-          type="password"
-          id="password"
-          value={password}
-          error={passwordError}
-          handleChange={passwordChanged}
-        />
-        <InputLabel htmlFor="confirmPassword">Подтверждение пароля</InputLabel>
-        <SimpleInput
-          type="password"
-          id="confirmPassword"
-          value={confirmPassword}
-          error={confirmPasswordError}
-          handleChange={confirmPasswordChanged}
-        />
-        <Button type="submit" disabled={!isSubmitEnabled} handler={handleSubmit}>
+        <EmailInput />
+        <PasswordInput />
+        <ConfirmPasswordInput />
+        <Button
+          type="submit"
+          disabled={!isSubmitEnabled}
+          handler={handleSubmit}
+          loading={isLoading}
+        >
           Зарегистрироваться
         </Button>
       </Form>

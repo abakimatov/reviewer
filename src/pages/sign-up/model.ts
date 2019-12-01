@@ -10,7 +10,9 @@ import {
 } from 'effector';
 
 import { history } from '@lib/routing';
+import { createFetching, Fetching } from '@lib/fetching';
 import { createUser } from '@features/session';
+import { notifyError, notifySuccess } from '@features/notifications';
 import { validateEmail, validatePassword, validatePasswordsEqual } from '@lib/validators';
 
 type FormErrorsSchema = {
@@ -40,6 +42,7 @@ export const formMounted = createEvent<void>();
 export const formUnmounted = createEvent<void>();
 
 const signUpProcessing = createEffect();
+export const signUpFetching: Fetching = createFetching(signUpProcessing);
 
 export const $email: Store<string> = createStore<string>('');
 export const $emailError: Store<string | null> = createStore(null);
@@ -128,4 +131,8 @@ signUpProcessing.use(async (form: FormPlainObject) => {
 
 signUpProcessing.done.watch(() => {
   history.push('/home');
+
+  return setTimeout(() => notifySuccess('Добро пожаловать! Спасибо за регистрацию.'), 1000);
 });
+
+signUpProcessing.fail.watch(({ error }) => notifyError(error.message));

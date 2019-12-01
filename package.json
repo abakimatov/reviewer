@@ -30,6 +30,7 @@
     "react": "^16.11.0",
     "react-dom": "^16.11.0",
     "react-router-dom": "^5.1.2",
+    "react-toastify": "^5.4.1",
     "reakit": "^1.0.0-beta.13",
     "styled-components": "^4.4.1",
     "styled-normalize": "^8.0.6",
