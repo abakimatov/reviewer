@@ -1,0 +1,30 @@
+{
+  "env": {
+    "browser": true,
+    "jest": true
+  },
+  "extends": ["airbnb", "prettier"],
+  "plugins": ["prettier"],
+  "rules": {
+    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".tsx"] }],
+    "react/prop-types": 0,
+    "import/no-extraneous-dependencies": [
+      "error",
+      { "devDependencies": true, "optionalDependencies": false, "peerDependencies": false }
+    ],
+    "import/prefer-default-export": 0,
+    "no-unused-vars": 0,
+    "prettier/prettier": ["error"]
+  },
+  "settings": {
+    "import/resolver": {
+      "webpack": {
+        "config": "config/webpack.common.js"
+      },
+      "node": {
+        "moduleDirectory": ["node_modules"]
+      },
+    }
+  },
+  "parser": "@typescript-eslint/parser"
+}

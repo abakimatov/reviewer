@@ -1,0 +1,23 @@
+{
+  "compilerOptions": {
+    "outDir": "./dist",
+    "sourceMap": true,
+    "noImplicitAny": true,
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "target": "es5",
+    "jsx": "react",
+    "allowJs": true,
+    "esModuleInterop": true,
+    "baseUrl": "./src",
+    "paths": {
+      "@ui": ["ui"],
+      "@theme": ["ui/theme"],
+      "@features/*": ["features/*"],
+      "@pages": ["pages"],
+      "@lib/*": ["lib/*"]
+    }
+  },
+  "exclude": ["node_modules"],
+  "include": ["src"]
+}
