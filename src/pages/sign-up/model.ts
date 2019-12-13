@@ -1,6 +1,7 @@
 import { ChangeEvent } from 'react';
 import {
   Store,
+  Effect,
   combine,
   sample,
   createEffect,
@@ -9,9 +10,17 @@ import {
   createStoreObject
 } from 'effector';
 
+import { firebase } from '@lib/firebase';
 import { history } from '@lib/routing';
+import { notifyError, notifySuccess, getErrorText } from '@lib/notifications';
+import { Fetching, createFetching } from '@lib/fetching';
+import {
+  validateEmail,
+  validatePassword,
+  validatePasswordsEqual
+} from '@lib/validators';
+import { authErrors } from '@features/constants';
 import { createUser } from '@features/session';
-import { validateEmail, validatePassword, validatePasswordsEqual } from '@lib/validators';
 
 type FormErrorsSchema = {
   email: string | null;
@@ -33,13 +42,16 @@ type FormPlainObject = {
 
 export const emailChanged = createEvent<ChangeEvent<HTMLInputElement>>();
 export const passwordChanged = createEvent<ChangeEvent<HTMLInputElement>>();
-export const confirmPasswordChanged = createEvent<ChangeEvent<HTMLInputElement>>();
+export const confirmPasswordChanged = createEvent<
+  ChangeEvent<HTMLInputElement>
+>();
 export const formSubmitted = createEvent<void>();
 export const formValidated = createEvent<FormErrorsSchema>();
 export const formMounted = createEvent<void>();
 export const formUnmounted = createEvent<void>();
 
-const signUpProcessing = createEffect();
+const signUpProcessing: Effect<any, any, firebase.auth.Error> = createEffect();
+export const signUpFetching: Fetching = createFetching(signUpProcessing);
 
 export const $email: Store<string> = createStore<string>('');
 export const $emailError: Store<string | null> = createStore(null);
@@ -85,40 +97,61 @@ export const $isSubmitEnabled: Store<boolean> = combine(
   (isFormValid: boolean): boolean => isFormValid
 );
 
-const trimEvent = (event: ChangeEvent<HTMLInputElement>): string => event.target.value.trim();
+const trimEvent = (event: ChangeEvent<HTMLInputElement>): string =>
+  event.target.value.trim();
 
-$email.on(emailChanged.map(trimEvent), (_: string, email: string): string => email);
-$password.on(passwordChanged.map(trimEvent), (_: string, password: string): string => password);
+$email.on(
+  emailChanged.map(trimEvent),
+  (_: string, email: string): string => email
+);
+$password.on(
+  passwordChanged.map(trimEvent),
+  (_: string, password: string): string => password
+);
 $confirmPassword.on(
   confirmPasswordChanged.map(trimEvent),
   (_: string, confirmPassword: string): string => confirmPassword
 );
 
-$emailError.on(formValidated, (_, { email }) => email).on(emailChanged, () => null);
-$passwordError.on(formValidated, (_, { password }) => password).on(passwordChanged, () => null);
+$emailError
+  .on(formValidated, (_, { email }) => email)
+  .on(emailChanged, () => null);
+$passwordError
+  .on(formValidated, (_, { password }) => password)
+  .on(passwordChanged, () => null);
 $confirmPasswordError
   .on(formValidated, (_, { confirmPassword }) => confirmPassword)
   .on(confirmPasswordChanged, () => null);
 
 $signUpForm.reset(formMounted).reset(formUnmounted);
 
-sample($signUpForm, formSubmitted).watch(({ email, password, confirmPassword }) => {
-  const validated = {
-    email: validateEmail(email),
-    password: validatePassword(password),
-    confirmPassword: validatePasswordsEqual(password, confirmPassword)
-  };
-  formValidated(validated);
-});
+sample($signUpForm, formSubmitted).watch(
+  ({ email, password, confirmPassword }) => {
+    const validated = {
+      email: validateEmail(email),
+      password: validatePassword(password),
+      confirmPassword: validatePasswordsEqual(password, confirmPassword)
+    };
+    formValidated(validated);
+  }
+);
 
 sample(
   createStoreObject({ isSubmitEnabled: $isSubmitEnabled, form: $signUpForm }),
   formValidated
-).watch(({ isSubmitEnabled, form }: { isSubmitEnabled: boolean; form: FormPlainObject }) => {
-  if (isSubmitEnabled) {
-    signUpProcessing(form);
+).watch(
+  ({
+    isSubmitEnabled,
+    form
+  }: {
+    isSubmitEnabled: boolean;
+    form: FormPlainObject;
+  }) => {
+    if (isSubmitEnabled) {
+      signUpProcessing(form);
+    }
   }
-});
+);
 
 signUpProcessing.use(async (form: FormPlainObject) => {
   const { email, password } = form;
@@ -128,4 +161,14 @@ signUpProcessing.use(async (form: FormPlainObject) => {
 
 signUpProcessing.done.watch(() => {
   history.push('/home');
+
+  return setTimeout(
+    () => notifySuccess('Добро пожаловать! Спасибо за регистрацию.'),
+    1000
+  );
+});
+
+signUpProcessing.fail.watch(({ error }): void => {
+  const errText: string = getErrorText(error.code, authErrors);
+  notifyError(errText);
 });

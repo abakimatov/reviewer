@@ -2,7 +2,16 @@ import * as React from 'react';
 import { useStore } from 'effector-react';
 
 import { styled } from '@theme';
-import { CenteredContent, Logo, SimpleInput, InputLabel, Button, darkTitle } from '@ui';
+import {
+  CenteredContent,
+  SimpleInput,
+  Logo,
+  InputLabel,
+  Button,
+  PrimaryLink,
+  lightTitle,
+  greyText
+} from '@ui';
 
 import {
   $email,
@@ -15,7 +24,10 @@ import {
   emailChanged,
   passwordChanged,
   confirmPasswordChanged,
-  formSubmitted
+  formSubmitted,
+  formMounted,
+  formUnmounted,
+  signUpFetching
 } from './model';
 
 const handleSubmit = (event: React.SyntheticEvent): void => {
@@ -23,14 +35,69 @@ const handleSubmit = (event: React.SyntheticEvent): void => {
   formSubmitted();
 };
 
+const EmailInput: React.FC = () => {
+  const email: string = useStore($email);
+  const emailError: string | null = useStore($emailError);
+
+  return (
+    <>
+      <InputLabel htmlFor="email">Email</InputLabel>
+      <SimpleInput
+        type="email"
+        id="email"
+        value={email}
+        error={emailError}
+        handleChange={emailChanged}
+      />
+    </>
+  );
+};
+
+const PasswordInput: React.FC = () => {
+  const password: string = useStore($password);
+  const passwordError: string | null = useStore($passwordError);
+
+  return (
+    <>
+      <InputLabel htmlFor="password">Пароль</InputLabel>
+      <SimpleInput
+        type="password"
+        id="password"
+        value={password}
+        error={passwordError}
+        handleChange={passwordChanged}
+      />
+    </>
+  );
+};
+
+const ConfirmPasswordInput: React.FC = () => {
+  const confirmPassword: string = useStore($confirmPassword);
+  const confirmPasswordError: string | null = useStore($confirmPasswordError);
+
+  return (
+    <>
+      <InputLabel htmlFor="confirmPassword">Подтверждение пароля</InputLabel>
+      <SimpleInput
+        type="password"
+        id="confirmPassword"
+        value={confirmPassword}
+        error={confirmPasswordError}
+        handleChange={confirmPasswordChanged}
+      />
+    </>
+  );
+};
+
 const SignUp: React.FC = () => {
-  const email = useStore($email);
-  const emailError = useStore($emailError);
-  const password = useStore($password);
-  const passwordError = useStore($passwordError);
-  const confirmPassword = useStore($confirmPassword);
-  const confirmPasswordError = useStore($confirmPasswordError);
-  const isSubmitEnabled = useStore($isSubmitEnabled);
+  const isSubmitEnabled: boolean = useStore($isSubmitEnabled);
+  const isLoading: boolean = useStore(signUpFetching.isLoading);
+
+  React.useEffect(() => {
+    formMounted();
+
+    return () => formUnmounted();
+  }, []);
 
   return (
     <CenteredContent>
@@ -40,33 +107,21 @@ const SignUp: React.FC = () => {
 
       <Form>
         <Title>Регистрация</Title>
-        <InputLabel htmlFor="email">Email</InputLabel>
-        <SimpleInput
-          type="email"
-          id="email"
-          value={email}
-          error={emailError}
-          handleChange={emailChanged}
-        />
-        <InputLabel htmlFor="password">Пароль</InputLabel>
-        <SimpleInput
-          type="password"
-          id="password"
-          value={password}
-          error={passwordError}
-          handleChange={passwordChanged}
-        />
-        <InputLabel htmlFor="confirmPassword">Подтверждение пароля</InputLabel>
-        <SimpleInput
-          type="password"
-          id="confirmPassword"
-          value={confirmPassword}
-          error={confirmPasswordError}
-          handleChange={confirmPasswordChanged}
-        />
-        <Button type="submit" disabled={!isSubmitEnabled} handler={handleSubmit}>
+        <EmailInput />
+        <PasswordInput />
+        <ConfirmPasswordInput />
+        <Button
+          type="submit"
+          handler={handleSubmit}
+          loading={isLoading}
+          variant="primary"
+        >
           Зарегистрироваться
         </Button>
+        <ToLogin>
+          <ToLoginText>Уже есть аккаунт?</ToLoginText>
+          <PrimaryLink to="/">Войти</PrimaryLink>
+        </ToLogin>
       </Form>
     </CenteredContent>
   );
@@ -77,15 +132,29 @@ const LogoWrap = styled.div`
   top: 40px;
 `;
 
-const Form = styled.div`
+const Form = styled.form`
   width: 100%;
   padding: 0 320px;
 `;
 
 const Title = styled.h1`
-  ${darkTitle};
+  ${lightTitle};
 
   margin-bottom: 50px;
+`;
+
+const ToLogin = styled.div`
+  padding: 15px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ToLoginText = styled.span`
+  ${greyText};
+
+  margin-right: 10px;
 `;
 
 export default SignUp;
