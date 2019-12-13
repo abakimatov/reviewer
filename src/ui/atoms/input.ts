@@ -12,7 +12,9 @@ export const Input = styled.input<InputProps>`
   font-weight: 500;
 
   border: 1px solid;
-  border-color: ${({ theme, error }) => (error ? theme.colors.error : theme.colors.dark)};
-  background-color: ${({ theme }) => theme.colors.background};
+  border-color: ${({ theme, error }) =>
+    error ? theme.colors.error : 'transparent'};
+  color: ${({ theme }) => theme.colors.white};
+  background-color: ${({ theme }) => theme.colors.dark};
   font-size: ${({ theme }) => theme.fontSizes[3]};
 `;

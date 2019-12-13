@@ -1,6 +1,7 @@
 const path = require('path');
 const merge = require('webpack-merge');
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
+const Dotenv = require('dotenv-webpack');
 
 const { resolvePath } = require('./resolvePath');
 const common = require('./webpack.common');
@@ -28,6 +29,9 @@ module.exports = merge(common, {
       compilationSuccessInfo: {
         messages: ['Application is running here http://localhost:3000']
       }
+    }),
+    new Dotenv({
+      path: resolvePath('.env.development')
     })
   ]
 });

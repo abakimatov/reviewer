@@ -1,8 +1,8 @@
+const webpack = require('webpack');
 const path = require('path');
 const fs = require('fs');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
-
 const { resolvePath } = require('./resolvePath');
 
 module.exports = {
@@ -42,6 +42,9 @@ module.exports = {
       }
     ]
   },
+  node: {
+    fs: 'empty'
+  },
   resolve: {
     extensions: ['.tsx', '.ts', '.js'],
     alias: {
@@ -54,6 +57,9 @@ module.exports = {
   },
   plugins: [
     new CleanWebpackPlugin(),
+    new webpack.DefinePlugin({
+      'process.env.NODE_ENV': JSON.stringify(process.env.NODE_ENV)
+    }),
     new HtmlWebPackPlugin({
       template: resolvePath('public/index.html')
     })

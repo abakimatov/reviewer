@@ -1,1 +1,1 @@
-export { createFetching, Fetching } from './create-fetching';
+export * from './create-fetching';

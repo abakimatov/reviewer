@@ -8,6 +8,7 @@ import semiBold from './fonts/Nunito-SemiBold.ttf';
 import regular from './fonts/Nunito-Regular.ttf';
 import light from './fonts/Nunito-Light.ttf';
 import extraLight from './fonts/Nunito-ExtraLight.ttf';
+import { Theme } from './theme';
 
 export const GlobalStyles = createGlobalStyle`
   ${normalize};
@@ -62,5 +63,7 @@ export const GlobalStyles = createGlobalStyle`
     width: 100%;
     height: 100%;
     font-family: 'Nunito', sans-serif;
+    background-color: ${({ theme }: { theme: Theme }) =>
+      theme.colors.background};
   };
 `;

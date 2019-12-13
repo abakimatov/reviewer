@@ -1,8 +1,8 @@
 import { styled } from '@theme';
-import { darkText } from './typography';
+import { lightText } from './typography';
 
 export const InputLabel = styled.label`
-  ${darkText};
+  ${lightText};
 
   font-size: ${({ theme }) => theme.fontSizes[2]}px;
 `;

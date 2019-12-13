@@ -1,11 +1,15 @@
 import baseStyled, { ThemedStyledInterface } from 'styled-components';
 
 type Colors = {
+  black: string;
   dark: string;
   primary: string;
+  darkPrimary: string;
   error: string;
   white: string;
   background: string;
+  light: string;
+  grey: string;
 };
 
 type FontSizes = number[];
@@ -13,11 +17,15 @@ type FontSizes = number[];
 type FontFamily = string;
 
 const colors: Colors = {
-  dark: '#141414',
+  black: '#000000',
+  dark: '#212121',
   primary: '#f70',
-  error: '#da1212',
+  darkPrimary: '#b96113',
+  error: '#e45d5d',
   white: '#ffffff',
-  background: '#f7f7f7'
+  light: '#E9EAEA',
+  background: '#121212',
+  grey: '#706F6F'
 };
 
 const fontSizes: FontSizes = [12, 14, 16, 18, 22, 24, 32, 48, 56];

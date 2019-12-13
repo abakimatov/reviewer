@@ -4,8 +4,8 @@ export const Primary = styled.strong`
   color: ${({ theme }) => theme.colors.primary};
 `;
 
-export const Dark = styled.strong`
-  color: ${({ theme }) => theme.colors.dark};
+export const White = styled.strong`
+  color: ${({ theme }) => theme.colors.white};
 `;
 
 export const LogoText = styled.span`
