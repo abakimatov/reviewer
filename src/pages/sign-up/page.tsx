@@ -2,7 +2,16 @@ import * as React from 'react';
 import { useStore } from 'effector-react';
 
 import { styled } from '@theme';
-import { CenteredContent, SimpleInput, Logo, InputLabel, Button, darkTitle } from '@ui';
+import {
+  CenteredContent,
+  SimpleInput,
+  Logo,
+  InputLabel,
+  Button,
+  PrimaryLink,
+  lightTitle,
+  greyText
+} from '@ui';
 
 import {
   $email,
@@ -66,12 +75,6 @@ const ConfirmPasswordInput: React.FC = () => {
   const confirmPassword: string = useStore($confirmPassword);
   const confirmPasswordError: string | null = useStore($confirmPasswordError);
 
-  React.useEffect(() => {
-    formMounted();
-
-    return () => formUnmounted();
-  }, []);
-
   return (
     <>
       <InputLabel htmlFor="confirmPassword">Подтверждение пароля</InputLabel>
@@ -90,6 +93,12 @@ const SignUp: React.FC = () => {
   const isSubmitEnabled: boolean = useStore($isSubmitEnabled);
   const isLoading: boolean = useStore(signUpFetching.isLoading);
 
+  React.useEffect(() => {
+    formMounted();
+
+    return () => formUnmounted();
+  }, []);
+
   return (
     <CenteredContent>
       <LogoWrap>
@@ -103,12 +112,16 @@ const SignUp: React.FC = () => {
         <ConfirmPasswordInput />
         <Button
           type="submit"
-          disabled={!isSubmitEnabled}
           handler={handleSubmit}
           loading={isLoading}
+          variant="primary"
         >
           Зарегистрироваться
         </Button>
+        <ToLogin>
+          <ToLoginText>Уже есть аккаунт?</ToLoginText>
+          <PrimaryLink to="/">Войти</PrimaryLink>
+        </ToLogin>
       </Form>
     </CenteredContent>
   );
@@ -119,15 +132,29 @@ const LogoWrap = styled.div`
   top: 40px;
 `;
 
-const Form = styled.div`
+const Form = styled.form`
   width: 100%;
   padding: 0 320px;
 `;
 
 const Title = styled.h1`
-  ${darkTitle};
+  ${lightTitle};
 
   margin-bottom: 50px;
+`;
+
+const ToLogin = styled.div`
+  padding: 15px 0;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+`;
+
+const ToLoginText = styled.span`
+  ${greyText};
+
+  margin-right: 10px;
 `;
 
 export default SignUp;

@@ -1,6 +1,7 @@
-export { darkText, darkTitle, fontFamily } from './typography';
-export { Primary, Dark, LogoText } from './logo-text';
+export { lightText, lightTitle, fontFamily, greyText } from './typography';
+export { Primary, White, LogoText } from './logo-text';
 export { InputError } from './input-error';
 export { InputLabel } from './input-label';
 export { Input } from './input';
-export { spinnerAnimation } from './spinner-keyframes';
+export { ldsEllipsis1, ldsEllipsis2, ldsEllipsis3 } from './spinner-keyframes';
+export { PrimaryLink } from './primary-link';

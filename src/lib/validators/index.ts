@@ -1,1 +1,5 @@
-export { validateEmail, validatePassword, validatePasswordsEqual } from './validators';
+export {
+  validateEmail,
+  validatePassword,
+  validatePasswordsEqual
+} from './validators';

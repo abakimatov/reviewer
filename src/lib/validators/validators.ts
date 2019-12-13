@@ -19,7 +19,8 @@ export const validatePasswordsEqual = (
   password: string,
   confirmPassword: string
 ): string | null => {
-  if (password !== confirmPassword) return 'Пароль должен совпадать с предыдущим.';
+  if (password !== confirmPassword)
+    return 'Пароль должен совпадать с предыдущим.';
 
   return null;
 };
