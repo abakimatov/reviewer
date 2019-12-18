@@ -4,6 +4,7 @@ import { ToastContainer } from 'react-toastify';
 
 import { firebase } from '@lib/firebase';
 import { userChanged } from '@features/session';
+import { LoadingLayer } from '@features/page-loading';
 import { GlobalStyles, theme } from '@theme';
 import { Routes } from '@pages';
 
@@ -17,6 +18,7 @@ export const App: React.FC = () => {
       <ToastContainer />
       <ThemeProvider theme={theme}>
         <GlobalStyles />
+        <LoadingLayer />
         <Routes />
       </ThemeProvider>
     </>

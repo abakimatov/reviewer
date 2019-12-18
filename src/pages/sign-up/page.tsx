@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useStore } from 'effector-react';
 
+import { routes } from '@features/constants';
 import { styled } from '@theme';
 import {
   CenteredContent,
@@ -10,7 +11,7 @@ import {
   Button,
   PrimaryLink,
   lightTitle,
-  greyText
+  grayText
 } from '@ui';
 
 import {
@@ -20,7 +21,6 @@ import {
   $emailError,
   $passwordError,
   $confirmPasswordError,
-  $isSubmitEnabled,
   emailChanged,
   passwordChanged,
   confirmPasswordChanged,
@@ -43,8 +43,8 @@ const EmailInput: React.FC = () => {
     <>
       <InputLabel htmlFor="email">Email</InputLabel>
       <SimpleInput
-        type="email"
         id="email"
+        type="email"
         value={email}
         error={emailError}
         handleChange={emailChanged}
@@ -61,8 +61,8 @@ const PasswordInput: React.FC = () => {
     <>
       <InputLabel htmlFor="password">Пароль</InputLabel>
       <SimpleInput
-        type="password"
         id="password"
+        type="password"
         value={password}
         error={passwordError}
         handleChange={passwordChanged}
@@ -79,8 +79,8 @@ const ConfirmPasswordInput: React.FC = () => {
     <>
       <InputLabel htmlFor="confirmPassword">Подтверждение пароля</InputLabel>
       <SimpleInput
-        type="password"
         id="confirmPassword"
+        type="password"
         value={confirmPassword}
         error={confirmPasswordError}
         handleChange={confirmPasswordChanged}
@@ -90,7 +90,6 @@ const ConfirmPasswordInput: React.FC = () => {
 };
 
 const SignUp: React.FC = () => {
-  const isSubmitEnabled: boolean = useStore($isSubmitEnabled);
   const isLoading: boolean = useStore(signUpFetching.isLoading);
 
   React.useEffect(() => {
@@ -102,7 +101,7 @@ const SignUp: React.FC = () => {
   return (
     <CenteredContent>
       <LogoWrap>
-        <Logo />
+        <Logo size="large" />
       </LogoWrap>
 
       <Form>
@@ -120,7 +119,7 @@ const SignUp: React.FC = () => {
         </Button>
         <ToLogin>
           <ToLoginText>Уже есть аккаунт?</ToLoginText>
-          <PrimaryLink to="/">Войти</PrimaryLink>
+          <PrimaryLink to={routes.signIn}>Войти</PrimaryLink>
         </ToLogin>
       </Form>
     </CenteredContent>
@@ -152,7 +151,7 @@ const ToLogin = styled.div`
 `;
 
 const ToLoginText = styled.span`
-  ${greyText};
+  ${grayText};
 
   margin-right: 10px;
 `;

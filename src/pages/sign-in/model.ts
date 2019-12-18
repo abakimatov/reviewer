@@ -15,7 +15,7 @@ import { firebase } from '@lib/firebase';
 import { notifyError, getErrorText } from '@lib/notifications';
 import { Fetching, createFetching } from '@lib/fetching';
 import { validateEmail } from '@lib/validators';
-import { authErrors } from '@features/constants';
+import { authErrors, routes } from '@features/constants';
 import { signInUser } from '@features/session';
 
 type SignInForm = {
@@ -67,18 +67,17 @@ const $signInForm: SignInFormStore = createStoreObject({
   password: $password
 });
 
-const $isSubmitEnabled: Store<boolean> = sample(
-  $isEmailCorrect,
-  $isPasswordCorrect,
-  (isEmailCorrect, isPasswordCorrect): boolean =>
-    isEmailCorrect && isPasswordCorrect
-);
-
 const trimEvent = (e: ChangeEvent<HTMLInputElement>): string =>
   e.target.value.trim();
 
-$email.on(emailChanged.map(trimEvent), (_, value): string => value);
-$password.on(passwordChanged.map(trimEvent), (_, value): string => value);
+$email
+  .on(emailChanged.map(trimEvent), (_, value): string => value)
+  .reset(formMounted)
+  .reset(formUnmounted);
+$password
+  .on(passwordChanged.map(trimEvent), (_, value): string => value)
+  .reset(formMounted)
+  .reset(formUnmounted);
 $emailError.on(formValidated, (_, { email }) => email);
 $passwordError.on(formValidated, (_, { password }) => password);
 
@@ -100,7 +99,7 @@ signInProcessing.use(({ email, password }: SignInForm) =>
 );
 
 signInProcessing.done.watch(() => {
-  history.push('/home');
+  history.push(routes.teams);
 });
 
 signInProcessing.fail.watch(({ error }) => {

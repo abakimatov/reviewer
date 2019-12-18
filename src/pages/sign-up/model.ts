@@ -12,14 +12,14 @@ import {
 
 import { firebase } from '@lib/firebase';
 import { history } from '@lib/routing';
-import { notifyError, notifySuccess, getErrorText } from '@lib/notifications';
+import { notifyError, getErrorText } from '@lib/notifications';
 import { Fetching, createFetching } from '@lib/fetching';
 import {
   validateEmail,
   validatePassword,
   validatePasswordsEqual
 } from '@lib/validators';
-import { authErrors } from '@features/constants';
+import { authErrors, routes } from '@features/constants';
 import { createUser } from '@features/session';
 
 type FormErrorsSchema = {
@@ -100,18 +100,24 @@ export const $isSubmitEnabled: Store<boolean> = combine(
 const trimEvent = (event: ChangeEvent<HTMLInputElement>): string =>
   event.target.value.trim();
 
-$email.on(
-  emailChanged.map(trimEvent),
-  (_: string, email: string): string => email
-);
-$password.on(
-  passwordChanged.map(trimEvent),
-  (_: string, password: string): string => password
-);
-$confirmPassword.on(
-  confirmPasswordChanged.map(trimEvent),
-  (_: string, confirmPassword: string): string => confirmPassword
-);
+$email
+  .on(emailChanged.map(trimEvent), (_: string, email: string): string => email)
+  .reset(formMounted)
+  .reset(formUnmounted);
+$password
+  .on(
+    passwordChanged.map(trimEvent),
+    (_: string, password: string): string => password
+  )
+  .reset(formMounted)
+  .reset(formUnmounted);
+$confirmPassword
+  .on(
+    confirmPasswordChanged.map(trimEvent),
+    (_: string, confirmPassword: string): string => confirmPassword
+  )
+  .reset(formMounted)
+  .reset(formUnmounted);
 
 $emailError
   .on(formValidated, (_, { email }) => email)
@@ -153,19 +159,16 @@ sample(
   }
 );
 
-signUpProcessing.use(async (form: FormPlainObject) => {
-  const { email, password } = form;
-
-  await createUser(email, password);
-});
+signUpProcessing.use(
+  ({
+    email,
+    password
+  }: FormPlainObject): Promise<firebase.auth.UserCredential> =>
+    createUser(email, password)
+);
 
 signUpProcessing.done.watch(() => {
-  history.push('/home');
-
-  return setTimeout(
-    () => notifySuccess('Добро пожаловать! Спасибо за регистрацию.'),
-    1000
-  );
+  history.push(routes.teams);
 });
 
 signUpProcessing.fail.watch(({ error }): void => {

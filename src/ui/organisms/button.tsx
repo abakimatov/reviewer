@@ -20,7 +20,7 @@ interface SProps {
 export const Button: React.FC<Props> = React.memo(
   ({ loading, variant, disabled, children, type, handler }: Props) => (
     <Root type={type} disabled={disabled} onClick={handler} variant={variant}>
-      {loading ? <Preloader variant={variant} /> : children}
+      {loading ? <Preloader variant={variant} size="middle" /> : children}
     </Root>
   )
 );

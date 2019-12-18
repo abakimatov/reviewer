@@ -33,7 +33,9 @@
     "react-toastify": "^5.4.1",
     "reakit": "^1.0.0-beta.13",
     "styled-components": "^4.4.1",
+    "styled-icons": "^9.1.0",
     "styled-normalize": "^8.0.6",
+    "uuid": "^3.3.3",
     "yup": "^0.27.0"
   },
   "devDependencies": {

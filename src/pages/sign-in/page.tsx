@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { useStore } from 'effector-react';
 
+import { routes } from '@features/constants';
 import { styled } from '@theme';
 import {
   CenteredContent,
@@ -10,7 +11,7 @@ import {
   Button,
   PrimaryLink,
   lightTitle,
-  greyText
+  grayText
 } from '@ui';
 import {
   $email,
@@ -20,6 +21,8 @@ import {
   emailChanged,
   passwordChanged,
   formSubmitted,
+  formMounted,
+  formUnmounted,
   signInFetching
 } from './model';
 
@@ -67,10 +70,16 @@ const PasswordInput: React.FC = () => {
 const SignIn: React.FC = () => {
   const isLoading = useStore(signInFetching.isLoading);
 
+  React.useEffect(() => {
+    formMounted();
+
+    return () => formUnmounted();
+  }, []);
+
   return (
     <CenteredContent>
       <LogoWrap>
-        <Logo />
+        <Logo size="large" />
       </LogoWrap>
       <Form>
         <Title>Вход</Title>
@@ -86,7 +95,7 @@ const SignIn: React.FC = () => {
         </Button>
         <ToRegister>
           <ToRegisterText>Еще нет аккаунта?</ToRegisterText>
-          <PrimaryLink to="sign-up">Зарегистрироваться</PrimaryLink>
+          <PrimaryLink to={routes.signUp}>Зарегистрироваться</PrimaryLink>
         </ToRegister>
       </Form>
     </CenteredContent>
@@ -118,7 +127,7 @@ const ToRegister = styled.div`
 `;
 
 const ToRegisterText = styled.span`
-  ${greyText};
+  ${grayText};
 
   margin-right: 10px;
 `;
