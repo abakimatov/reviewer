@@ -4,6 +4,7 @@ interface Routes {
   readonly teams: string;
   readonly employees: string;
   readonly skills: string;
+  readonly newTeam: string;
 }
 
 export const routes: Routes = {
@@ -11,5 +12,6 @@ export const routes: Routes = {
   signUp: '/sign-up',
   teams: '/teams',
   employees: '/employees',
-  skills: '/skills'
+  skills: '/skills',
+  newTeam: '/teams/new'
 };

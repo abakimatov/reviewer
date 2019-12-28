@@ -5,9 +5,7 @@ import { SNavLink } from '../atoms';
 
 export const NavBar: React.FC = () => (
   <Root>
-    <SNavLink exact to="/teams">
-      Команды
-    </SNavLink>
+    <SNavLink to="/teams">Команды</SNavLink>
     <SNavLink exact to="/employees">
       Сотрудники
     </SNavLink>

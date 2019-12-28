@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { useStore } from 'effector-react';
 
-import { routes } from '@features/constants';
+import { routes } from '@lib/constants';
 import { styled } from '@theme';
 import {
   CenteredContent,

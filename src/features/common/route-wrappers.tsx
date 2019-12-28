@@ -3,7 +3,7 @@ import { Route, Redirect } from 'react-router-dom';
 import { useStore } from 'effector-react';
 
 import { $user } from '@features/session';
-import { routes } from '@features/constants';
+import { routes } from '@lib/constants';
 
 export const PrivateRoute: React.FC<any> = ({
   component: Component,

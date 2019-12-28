@@ -7,3 +7,5 @@ export { ldsEllipsis1, ldsEllipsis2, ldsEllipsis3 } from './spinner-keyframes';
 export { PrimaryLink } from './primary-link';
 export { SNavLink } from './nav-link';
 export { VerticalDivider } from './vertical-divider';
+export { EmptyIcon } from './empty-icon';
+export { PageTitle } from './page-title';

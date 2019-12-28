@@ -19,7 +19,7 @@ import {
   validatePassword,
   validatePasswordsEqual
 } from '@lib/validators';
-import { authErrors, routes } from '@features/constants';
+import { authErrors, routes } from '@lib/constants';
 import { createUser } from '@features/session';
 
 type FormErrorsSchema = {

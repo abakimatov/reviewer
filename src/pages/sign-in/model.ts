@@ -15,7 +15,7 @@ import { firebase } from '@lib/firebase';
 import { notifyError, getErrorText } from '@lib/notifications';
 import { Fetching, createFetching } from '@lib/fetching';
 import { validateEmail } from '@lib/validators';
-import { authErrors, routes } from '@features/constants';
+import { authErrors, routes } from '@lib/constants';
 import { signInUser } from '@features/session';
 
 type SignInForm = {

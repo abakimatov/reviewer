@@ -4,7 +4,7 @@ import { styled } from '@theme';
 
 type Props = {
   header?: React.ReactNode;
-  children: React.ReactChild;
+  children: React.ReactNode;
 };
 
 export const DefaultLayout: React.FC<Props> = ({ header, children }: Props) => (
@@ -37,5 +37,7 @@ const Container = styled.div`
   height: 100%;
   width: 100%;
   max-width: 1170px;
+  flex-direction: column;
   flex: 1;
+  display: flex;
 `;

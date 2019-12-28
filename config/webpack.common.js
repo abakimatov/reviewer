@@ -8,7 +8,8 @@ const { resolvePath } = require('./resolvePath');
 module.exports = {
   entry: resolvePath('src/index.tsx'),
   output: {
-    path: resolvePath('dist')
+    path: resolvePath('dist'),
+    publicPath: '/'
   },
   module: {
     rules: [
