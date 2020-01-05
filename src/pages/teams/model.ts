@@ -9,7 +9,7 @@ import {
   sample
 } from 'effector';
 
-import { Teams } from '@typings/team';
+import { Teams, Team } from '@typings/team';
 import { $user } from '@features/session';
 import { loadingStarted, loadingFinished } from '@features/page-loading';
 import { firebase, teamsRef } from '@lib/firebase';
@@ -52,7 +52,11 @@ fetchTeamsFx.use(
       data.push({ author, name, createdAt, participants, id: doc.id });
     });
 
-    return data;
+    const sortedByDate: Teams = [...data].sort(
+      (a: Team, b: Team): number => b.createdAt - a.createdAt
+    );
+
+    return sortedByDate;
   }
 );
 
