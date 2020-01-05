@@ -42,7 +42,7 @@ export const TeamCard: React.FC<Props> = React.memo(
     const onChangeConfirmVisible = React.useCallback(
       (e: React.SyntheticEvent) => {
         e.preventDefault();
-        setConfirmVisible((isVisible: boolean) => !isVisible);
+        setConfirmVisible(isVisible => !isVisible);
       },
       []
     );
@@ -55,6 +55,7 @@ export const TeamCard: React.FC<Props> = React.memo(
           <CreatedAt>{createdDate}</CreatedAt>
           <ParticipantsCount>{participants.length}</ParticipantsCount>
         </Info>
+        <HorizontalDivider color="gray" margin="small" />
         <Actions>
           {!isConfirmVisible && (
             <IconedButton handler={onChangeConfirmVisible}>
@@ -94,4 +95,5 @@ const Actions = styled.div`
   display: flex;
   align-items: flex-end;
   justify-content: flex-end;
+  padding-top: 10px;
 `;
