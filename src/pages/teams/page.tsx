@@ -17,15 +17,19 @@ import { $teams, pageMounted, teamRemoved, removeTeamFetching } from './model';
 
 const List: React.FC = (): JSX.Element => {
   const loading = useStore(removeTeamFetching.isLoading);
-  const list: React.ReactNode = useList($teams, (data: Team) => (
-    <CardWrapper>
-      <CardLink to="/">
-        <TeamCard onRemove={teamRemoved} loading={loading} {...data} />
-      </CardLink>
-    </CardWrapper>
-  ));
+  const teams = useStore($teams);
 
-  return <Root>{list}</Root>;
+  return (
+    <Root>
+      {teams.map((team: Team) => (
+        <CardWrapper key={team.id}>
+          <CardLink to="/">
+            <TeamCard onRemove={teamRemoved} loading={loading} {...team} />
+          </CardLink>
+        </CardWrapper>
+      ))}
+    </Root>
+  );
 };
 
 const Teams: React.FC = (): JSX.Element => {
