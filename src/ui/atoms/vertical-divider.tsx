@@ -39,10 +39,10 @@ export const VerticalDivider = styled.div.attrs<Props>(
   }
 
   &[data-margin='small'] {
-    margin: 10px;
+    margin: 0 10px;
   }
 
   &[data-margin='large'] {
-    margin: 40px;
+    margin: 0 40px;
   }
 `;

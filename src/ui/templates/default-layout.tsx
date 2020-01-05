@@ -40,4 +40,5 @@ const Container = styled.div`
   flex-direction: column;
   flex: 1;
   display: flex;
+  padding: 0 20px;
 `;

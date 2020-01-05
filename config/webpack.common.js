@@ -53,7 +53,8 @@ module.exports = {
       '@theme': resolvePath('src/ui/theme'),
       '@features': resolvePath('src/features'),
       '@pages': resolvePath('src/pages'),
-      '@lib': resolvePath('src/lib')
+      '@lib': resolvePath('src/lib'),
+      '@typings': resolvePath('src/typings')
     }
   },
   plugins: [

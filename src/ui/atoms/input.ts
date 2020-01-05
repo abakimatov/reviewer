@@ -1,10 +1,10 @@
-import { styled } from '@theme';
+import { css } from 'styled-components';
 
 type InputProps = {
   error: boolean;
 };
 
-export const Input = styled.input<InputProps>`
+export const input = css<InputProps>`
   width: 100%;
   border-radius: 20px;
   margin-top: 10px;
@@ -16,5 +16,9 @@ export const Input = styled.input<InputProps>`
     error ? theme.colors.error : 'transparent'};
   color: ${({ theme }) => theme.colors.white};
   background-color: ${({ theme }) => theme.colors.dark};
-  font-size: ${({ theme }) => theme.fontSizes[3]};
+  font-size: ${({ theme }) => theme.fontSizes[3]}px;
+
+  ::placeholder {
+    color: ${({ theme }) => theme.colors.gray};
+  }
 `;

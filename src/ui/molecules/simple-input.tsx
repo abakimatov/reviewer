@@ -1,14 +1,13 @@
 import * as React from 'react';
 
 import { styled } from '@theme';
-import { Input, InputError } from '../atoms';
+import { input, InputError } from '../atoms';
 
 type Props = {
   type: string;
   id: string;
   value: string;
   error: string;
-  placeholder?: string;
   handleChange: (e: React.ChangeEvent) => void;
 };
 
@@ -17,8 +16,7 @@ export const SimpleInput: React.FC<Props> = ({
   id,
   value,
   error,
-  handleChange,
-  placeholder
+  handleChange
 }) => (
   <Root>
     <Input
@@ -27,7 +25,6 @@ export const SimpleInput: React.FC<Props> = ({
       value={value}
       onChange={handleChange}
       error={!!error}
-      placeholder={placeholder || ''}
     />
     <InputError error={!!error}>{error}</InputError>
   </Root>
@@ -37,4 +34,8 @@ const Root = styled.div`
   width: 100%;
   display: flex;
   flex-direction: column;
+`;
+
+const Input = styled.input`
+  ${input};
 `;
