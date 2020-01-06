@@ -7,19 +7,21 @@ import {
   createEffect,
   createEvent,
   createStore,
-  createStoreObject
+  createStoreObject,
+  forward,
+  guard
 } from 'effector';
 
 import { firebase } from '@lib/firebase';
 import { history } from '@lib/routing';
-import { notifyError, notifySuccess, getErrorText } from '@lib/notifications';
+import { notifyError, getErrorText } from '@lib/notifications';
 import { Fetching, createFetching } from '@lib/fetching';
 import {
   validateEmail,
   validatePassword,
   validatePasswordsEqual
 } from '@lib/validators';
-import { authErrors } from '@features/constants';
+import { authErrors, routes } from '@lib/constants';
 import { createUser } from '@features/session';
 
 type FormErrorsSchema = {
@@ -50,8 +52,12 @@ export const formValidated = createEvent<FormErrorsSchema>();
 export const formMounted = createEvent<void>();
 export const formUnmounted = createEvent<void>();
 
-const signUpProcessing: Effect<any, any, firebase.auth.Error> = createEffect();
-export const signUpFetching: Fetching = createFetching(signUpProcessing);
+const signUpFx: Effect<
+  FormPlainObject,
+  firebase.auth.UserCredential,
+  firebase.auth.Error
+> = createEffect();
+export const signUpFetching: Fetching = createFetching(signUpFx);
 
 export const $email: Store<string> = createStore<string>('');
 export const $emailError: Store<string | null> = createStore(null);
@@ -92,83 +98,66 @@ export const $isFormValid: Store<boolean> = combine(
     isEmailCorrect && isPasswordCorrect && isConfirmPasswordCorrect
 );
 
-export const $isSubmitEnabled: Store<boolean> = combine(
-  $isFormValid,
-  (isFormValid: boolean): boolean => isFormValid
-);
-
 const trimEvent = (event: ChangeEvent<HTMLInputElement>): string =>
   event.target.value.trim();
 
-$email.on(
-  emailChanged.map(trimEvent),
-  (_: string, email: string): string => email
-);
-$password.on(
-  passwordChanged.map(trimEvent),
-  (_: string, password: string): string => password
-);
-$confirmPassword.on(
-  confirmPasswordChanged.map(trimEvent),
-  (_: string, confirmPassword: string): string => confirmPassword
-);
+$email
+  .on(emailChanged.map(trimEvent), (_: string, email: string): string => email)
+  .reset(formMounted)
+  .reset(formUnmounted);
+$password
+  .on(
+    passwordChanged.map(trimEvent),
+    (_: string, password: string): string => password
+  )
+  .reset(formMounted)
+  .reset(formUnmounted);
+$confirmPassword
+  .on(
+    confirmPasswordChanged.map(trimEvent),
+    (_: string, confirmPassword: string): string => confirmPassword
+  )
+  .reset(formMounted)
+  .reset(formUnmounted);
 
 $emailError
-  .on(formValidated, (_, { email }) => email)
+  .on(formValidated, (_, { email }) => validateEmail(email))
   .on(emailChanged, () => null);
 $passwordError
-  .on(formValidated, (_, { password }) => password)
+  .on(formValidated, (_, { password }) => validatePassword(password))
   .on(passwordChanged, () => null);
 $confirmPasswordError
-  .on(formValidated, (_, { confirmPassword }) => confirmPassword)
+  .on(formValidated, (_, { password, confirmPassword }) =>
+    validatePasswordsEqual(password, confirmPassword)
+  )
   .on(confirmPasswordChanged, () => null);
 
 $signUpForm.reset(formMounted).reset(formUnmounted);
 
-sample($signUpForm, formSubmitted).watch(
-  ({ email, password, confirmPassword }) => {
-    const validated = {
-      email: validateEmail(email),
-      password: validatePassword(password),
-      confirmPassword: validatePasswordsEqual(password, confirmPassword)
-    };
-    formValidated(validated);
-  }
-);
+forward({
+  from: sample($signUpForm, formSubmitted),
+  to: formValidated
+});
 
-sample(
-  createStoreObject({ isSubmitEnabled: $isSubmitEnabled, form: $signUpForm }),
-  formValidated
-).watch(
+guard({
+  source: sample($signUpForm, formValidated),
+  filter: $isFormValid,
+  target: signUpFx
+});
+
+signUpFx.use(
   ({
-    isSubmitEnabled,
-    form
-  }: {
-    isSubmitEnabled: boolean;
-    form: FormPlainObject;
-  }) => {
-    if (isSubmitEnabled) {
-      signUpProcessing(form);
-    }
-  }
+    email,
+    password
+  }: FormPlainObject): Promise<firebase.auth.UserCredential> =>
+    createUser(email, password)
 );
 
-signUpProcessing.use(async (form: FormPlainObject) => {
-  const { email, password } = form;
-
-  await createUser(email, password);
+signUpFx.done.watch(() => {
+  history.push(routes.teams);
 });
 
-signUpProcessing.done.watch(() => {
-  history.push('/home');
-
-  return setTimeout(
-    () => notifySuccess('Добро пожаловать! Спасибо за регистрацию.'),
-    1000
-  );
-});
-
-signUpProcessing.fail.watch(({ error }): void => {
+signUpFx.fail.watch(({ error }): void => {
   const errText: string = getErrorText(error.code, authErrors);
   notifyError(errText);
 });

@@ -11,11 +11,11 @@ export const lightText = css`
   font-size: ${({ theme }) => theme.fontSizes[1]}px;
 `;
 
-export const greyText = css`
+export const grayText = css`
   font-weight: 500;
 
   font-size: ${({ theme }) => theme.fontSizes[1]}px;
-  color: ${({ theme }) => theme.colors.grey};
+  color: ${({ theme }) => theme.colors.gray};
 `;
 
 export const lightTitle = css`

@@ -3,7 +3,7 @@ const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
 const Dotenv = require('dotenv-webpack');
 
-const resolvePath = require('./resolvePath');
+const { resolvePath } = require('./resolvePath');
 const common = require('./webpack.common');
 
 module.exports = merge(common, {

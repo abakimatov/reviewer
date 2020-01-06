@@ -9,7 +9,8 @@ type Colors = {
   white: string;
   background: string;
   light: string;
-  grey: string;
+  gray: string;
+  transparencyBg: string;
 };
 
 type FontSizes = number[];
@@ -25,7 +26,8 @@ const colors: Colors = {
   white: '#ffffff',
   light: '#E9EAEA',
   background: '#121212',
-  grey: '#706F6F'
+  gray: '#706F6F',
+  transparencyBg: 'rgba(112, 111, 111, 0.4)'
 };
 
 const fontSizes: FontSizes = [12, 14, 16, 18, 22, 24, 32, 48, 56];

@@ -7,7 +7,10 @@ import {
   createStore,
   createEffect,
   createStoreObject,
-  sample
+  sample,
+  combine,
+  forward,
+  guard
 } from 'effector';
 
 import { history } from '@lib/routing';
@@ -15,7 +18,7 @@ import { firebase } from '@lib/firebase';
 import { notifyError, getErrorText } from '@lib/notifications';
 import { Fetching, createFetching } from '@lib/fetching';
 import { validateEmail } from '@lib/validators';
-import { authErrors } from '@features/constants';
+import { authErrors, routes } from '@lib/constants';
 import { signInUser } from '@features/session';
 
 type SignInForm = {
@@ -40,12 +43,12 @@ export const formValidated: Event<ErrorsSchema> = createEvent();
 export const formMounted = createEvent();
 export const formUnmounted = createEvent();
 
-export const signInProcessing: Effect<
-  any,
-  any,
+export const signInFx: Effect<
+  SignInForm,
+  firebase.auth.UserCredential,
   firebase.auth.Error
 > = createEffect();
-export const signInFetching: Fetching = createFetching(signInProcessing);
+export const signInFetching: Fetching = createFetching(signInFx);
 
 export const $email: Store<string> = createStore<string>('');
 export const $password: Store<string> = createStore<string>('');
@@ -61,49 +64,51 @@ export const $isEmailCorrect: Store<boolean> = $emailError.map(
 export const $isPasswordCorrect: Store<boolean> = $passwordError.map(
   state => state === null
 );
-
 const $signInForm: SignInFormStore = createStoreObject({
   email: $email,
   password: $password
 });
-
-const $isSubmitEnabled: Store<boolean> = sample(
+const $isFormValid: Store<boolean> = combine(
   $isEmailCorrect,
   $isPasswordCorrect,
-  (isEmailCorrect, isPasswordCorrect): boolean =>
-    isEmailCorrect && isPasswordCorrect
+  (isEmailCorrect, isPasswordCorrect) => isEmailCorrect && isPasswordCorrect
 );
 
 const trimEvent = (e: ChangeEvent<HTMLInputElement>): string =>
   e.target.value.trim();
 
-$email.on(emailChanged.map(trimEvent), (_, value): string => value);
-$password.on(passwordChanged.map(trimEvent), (_, value): string => value);
-$emailError.on(formValidated, (_, { email }) => email);
-$passwordError.on(formValidated, (_, { password }) => password);
-
+$email
+  .on(emailChanged.map(trimEvent), (_, value): string => value)
+  .reset(formMounted)
+  .reset(formUnmounted);
+$password
+  .on(passwordChanged.map(trimEvent), (_, value): string => value)
+  .reset(formMounted)
+  .reset(formUnmounted);
+$emailError.on(formValidated, (_, { email }) => validateEmail(email));
+$passwordError.on(formValidated, (_, { password }) =>
+  password.length > 0 ? null : 'Пожалуйста, введите пароль.'
+);
 $signInForm.reset(formMounted).reset(formUnmounted);
 
-sample($signInForm, formSubmitted).watch(({ email, password }) => {
-  const validated: ErrorsSchema = {
-    email: validateEmail(email),
-    password: password.length > 0 ? null : 'Пожалуйста, введите пароль.'
-  };
-
-  formValidated(validated);
+forward({
+  from: sample($signInForm, formSubmitted),
+  to: formValidated
 });
 
-sample($signInForm, formValidated).watch(signInProcessing);
-
-signInProcessing.use(({ email, password }: SignInForm) =>
-  signInUser(email, password)
-);
-
-signInProcessing.done.watch(() => {
-  history.push('/home');
+guard({
+  source: formValidated,
+  filter: $isFormValid,
+  target: signInFx
 });
 
-signInProcessing.fail.watch(({ error }) => {
+signInFx.use(({ email, password }: SignInForm) => signInUser(email, password));
+
+signInFx.done.watch(() => {
+  history.push(routes.teams);
+});
+
+signInFx.fail.watch(({ error }) => {
   const errorText: string = getErrorText(error.code, authErrors);
   notifyError(errorText);
 });
