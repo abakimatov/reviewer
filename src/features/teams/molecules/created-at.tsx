@@ -1,8 +1,7 @@
 import * as React from 'react';
 
 import { styled } from '@theme';
-import { grayText } from '@ui';
-import { ClockIcon } from '../atoms';
+import { grayText, ClockIcon } from '@ui';
 
 interface Props {
   readonly children: React.ReactNode;

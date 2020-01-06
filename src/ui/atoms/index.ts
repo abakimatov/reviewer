@@ -13,3 +13,5 @@ export { selectStyles } from './select-styles';
 export { card } from './card';
 export { HorizontalDivider } from './horizontal-divider';
 export { TrashIcon } from './trash-icon';
+export { ClockIcon } from './clock-icon';
+export { ParticipantsIcon } from './participants-icon';
