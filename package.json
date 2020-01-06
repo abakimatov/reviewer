@@ -6,6 +6,8 @@
   "scripts": {
     "start": "webpack-dev-server --config ./config/webpack.dev.js --color",
     "build": "webpack --config ./config/webpack.prod.js",
+    "serve:local": "firebase serve --only hosting",
+    "deploy": "npm run build && firebase deploy",
     "test": "jest",
     "lint": "eslint ./src",
     "prettier:run": "prettier --write --only-change 'src/**/*.js'"
