@@ -15,8 +15,9 @@
       "@theme": ["ui/theme"],
       "@features/*": ["features/*"],
       "@pages": ["pages"],
-      "@lib/*": ["lib/*"]
-    }
+      "@lib/*": ["lib/*"],
+      "@typings/*": ["typings/*"]
+    },
   },
   "exclude": ["node_modules"],
   "include": ["src"]

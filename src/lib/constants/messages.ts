@@ -1,7 +1,6 @@
 import { auth } from './error-codes';
 
 type MapElement = [string, string];
-
 type MapStruct = MapElement[];
 
 const messages: MapStruct = [

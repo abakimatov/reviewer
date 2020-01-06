@@ -8,7 +8,8 @@ const { resolvePath } = require('./resolvePath');
 module.exports = {
   entry: resolvePath('src/index.tsx'),
   output: {
-    path: resolvePath('dist')
+    path: resolvePath('dist'),
+    publicPath: '/'
   },
   module: {
     rules: [
@@ -52,7 +53,8 @@ module.exports = {
       '@theme': resolvePath('src/ui/theme'),
       '@features': resolvePath('src/features'),
       '@pages': resolvePath('src/pages'),
-      '@lib': resolvePath('src/lib')
+      '@lib': resolvePath('src/lib'),
+      '@typings': resolvePath('src/typings')
     }
   },
   plugins: [
