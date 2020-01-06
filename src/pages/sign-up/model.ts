@@ -7,7 +7,9 @@ import {
   createEffect,
   createEvent,
   createStore,
-  createStoreObject
+  createStoreObject,
+  forward,
+  guard
 } from 'effector';
 
 import { firebase } from '@lib/firebase';
@@ -50,8 +52,8 @@ export const formValidated = createEvent<FormErrorsSchema>();
 export const formMounted = createEvent<void>();
 export const formUnmounted = createEvent<void>();
 
-const signUpProcessing: Effect<any, any, firebase.auth.Error> = createEffect();
-export const signUpFetching: Fetching = createFetching(signUpProcessing);
+const signUpFx: Effect<any, any, firebase.auth.Error> = createEffect();
+export const signUpFetching: Fetching = createFetching(signUpFx);
 
 export const $email: Store<string> = createStore<string>('');
 export const $emailError: Store<string | null> = createStore(null);
@@ -120,46 +122,31 @@ $confirmPassword
   .reset(formUnmounted);
 
 $emailError
-  .on(formValidated, (_, { email }) => email)
+  .on(formValidated, (_, { email }) => validateEmail(email))
   .on(emailChanged, () => null);
 $passwordError
-  .on(formValidated, (_, { password }) => password)
+  .on(formValidated, (_, { password }) => validatePassword(password))
   .on(passwordChanged, () => null);
 $confirmPasswordError
-  .on(formValidated, (_, { confirmPassword }) => confirmPassword)
+  .on(formValidated, (_, { password, confirmPassword }) =>
+    validatePasswordsEqual(password, confirmPassword)
+  )
   .on(confirmPasswordChanged, () => null);
 
 $signUpForm.reset(formMounted).reset(formUnmounted);
 
-sample($signUpForm, formSubmitted).watch(
-  ({ email, password, confirmPassword }) => {
-    const validated = {
-      email: validateEmail(email),
-      password: validatePassword(password),
-      confirmPassword: validatePasswordsEqual(password, confirmPassword)
-    };
-    formValidated(validated);
-  }
-);
+forward({
+  from: sample($signUpForm, formSubmitted),
+  to: formValidated
+});
 
-sample(
-  createStoreObject({ isSubmitEnabled: $isSubmitEnabled, form: $signUpForm }),
-  formValidated
-).watch(
-  ({
-    isSubmitEnabled,
-    form
-  }: {
-    isSubmitEnabled: boolean;
-    form: FormPlainObject;
-  }) => {
-    if (isSubmitEnabled) {
-      signUpProcessing(form);
-    }
-  }
-);
+guard({
+  source: sample($signUpForm, formValidated),
+  filter: $isSubmitEnabled,
+  target: signUpFx
+});
 
-signUpProcessing.use(
+signUpFx.use(
   ({
     email,
     password
@@ -167,11 +154,11 @@ signUpProcessing.use(
     createUser(email, password)
 );
 
-signUpProcessing.done.watch(() => {
+signUpFx.done.watch(() => {
   history.push(routes.teams);
 });
 
-signUpProcessing.fail.watch(({ error }): void => {
+signUpFx.fail.watch(({ error }): void => {
   const errText: string = getErrorText(error.code, authErrors);
   notifyError(errText);
 });
