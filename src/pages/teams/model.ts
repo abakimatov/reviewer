@@ -40,6 +40,7 @@ $teams
 $teamRemovingId
   .on(teamRemoved, (_, id: string) => id)
   .on(removeTeamFx.done, () => null)
+  .on(removeTeamFx.fail, () => null)
   .reset(pageMounted);
 
 fetchTeamsFx.use(
