@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { useStore, useList } from 'effector-react';
+import { useStore } from 'effector-react';
 
 import { Team } from '@typings/team';
 import { TeamCard } from '@features/teams';
@@ -13,18 +13,22 @@ import {
   LinkButton,
   CardLink
 } from '@ui';
-import { $teams, pageMounted, teamRemoved, removeTeamFetching } from './model';
+import { $teams, $teamRemovingId, pageMounted, teamRemoved } from './model';
 
 const List: React.FC = (): JSX.Element => {
-  const loading = useStore(removeTeamFetching.isLoading);
   const teams = useStore($teams);
-
+  const removingId = useStore($teamRemovingId);
   return (
     <Root>
       {teams.map((team: Team) => (
         <CardWrapper key={team.id}>
           <CardLink to="/">
-            <TeamCard onRemove={teamRemoved} loading={loading} {...team} />
+            <TeamCard
+              onRemove={teamRemoved}
+              loading={team.id === removingId}
+              removeEnabled={removingId === null}
+              {...team}
+            />
           </CardLink>
         </CardWrapper>
       ))}

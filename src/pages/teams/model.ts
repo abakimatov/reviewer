@@ -13,13 +13,13 @@ import { Teams, Team } from '@typings/team';
 import { $user } from '@features/session';
 import { loadingStarted, loadingFinished } from '@features/page-loading';
 import { firebase, teamsRef } from '@lib/firebase';
-import { createFetching, Fetching } from '@lib/fetching';
 import { notifyError } from '@lib/notifications';
 
 export const pageMounted: Event<void> = createEvent();
 export const teamRemoved: Event<string> = createEvent();
 
 export const $teams: Store<Teams> = createStore([]);
+export const $teamRemovingId: Store<string | null> = createStore(null);
 
 const fetchTeamsFx: Effect<
   firebase.User,
@@ -31,13 +31,16 @@ const removeTeamFx: Effect<
   string,
   firebase.firestore.FirestoreError
 > = createEffect();
-export const removeTeamFetching: Fetching = createFetching(removeTeamFx);
 
 $teams
   .on(fetchTeamsFx.done, (_, { result }): Teams => result)
   .on(removeTeamFx.done, (teams, { result: teamId }) =>
     teams.filter(({ id }) => id !== teamId)
   );
+$teamRemovingId
+  .on(teamRemoved, (_, id: string) => id)
+  .on(removeTeamFx.done, () => null)
+  .reset(pageMounted);
 
 fetchTeamsFx.use(
   async (user: firebase.User): Promise<Teams> => {

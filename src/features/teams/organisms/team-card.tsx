@@ -11,6 +11,7 @@ import { DeleteConfirmation } from './delete-confirmation';
 interface Props extends Team {
   readonly onRemove: (id: string) => void;
   readonly loading: boolean;
+  readonly removeEnabled: boolean;
 }
 
 export const TeamCard: React.FC<Props> = React.memo(
@@ -20,7 +21,8 @@ export const TeamCard: React.FC<Props> = React.memo(
     participants,
     id,
     onRemove,
-    loading
+    loading,
+    removeEnabled
   }: Props): JSX.Element => {
     const [isConfirmVisible, setConfirmVisible] = React.useState<boolean>(
       false
@@ -34,9 +36,12 @@ export const TeamCard: React.FC<Props> = React.memo(
     const onConfirm = React.useCallback(
       (e: React.SyntheticEvent) => {
         e.preventDefault();
-        onRemove(id);
+
+        if (removeEnabled) {
+          onRemove(id);
+        }
       },
-      [id]
+      [removeEnabled, id]
     );
 
     const onChangeConfirmVisible = React.useCallback(
