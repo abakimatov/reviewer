@@ -94,11 +94,6 @@ export const $isFormValid: Store<boolean> = combine(
     isEmailCorrect && isPasswordCorrect && isConfirmPasswordCorrect
 );
 
-export const $isSubmitEnabled: Store<boolean> = combine(
-  $isFormValid,
-  (isFormValid: boolean): boolean => isFormValid
-);
-
 const trimEvent = (event: ChangeEvent<HTMLInputElement>): string =>
   event.target.value.trim();
 
@@ -142,7 +137,7 @@ forward({
 
 guard({
   source: sample($signUpForm, formValidated),
-  filter: $isSubmitEnabled,
+  filter: $isFormValid,
   target: signUpFx
 });
 
