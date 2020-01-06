@@ -52,7 +52,11 @@ export const formValidated = createEvent<FormErrorsSchema>();
 export const formMounted = createEvent<void>();
 export const formUnmounted = createEvent<void>();
 
-const signUpFx: Effect<any, any, firebase.auth.Error> = createEffect();
+const signUpFx: Effect<
+  FormPlainObject,
+  firebase.auth.UserCredential,
+  firebase.auth.Error
+> = createEffect();
 export const signUpFetching: Fetching = createFetching(signUpFx);
 
 export const $email: Store<string> = createStore<string>('');
