@@ -7,7 +7,10 @@ import {
   createStore,
   createEffect,
   createStoreObject,
-  sample
+  sample,
+  combine,
+  forward,
+  guard
 } from 'effector';
 
 import { history } from '@lib/routing';
@@ -40,12 +43,8 @@ export const formValidated: Event<ErrorsSchema> = createEvent();
 export const formMounted = createEvent();
 export const formUnmounted = createEvent();
 
-export const signInProcessing: Effect<
-  any,
-  any,
-  firebase.auth.Error
-> = createEffect();
-export const signInFetching: Fetching = createFetching(signInProcessing);
+export const signInFx: Effect<any, any, firebase.auth.Error> = createEffect();
+export const signInFetching: Fetching = createFetching(signInFx);
 
 export const $email: Store<string> = createStore<string>('');
 export const $password: Store<string> = createStore<string>('');
@@ -61,11 +60,15 @@ export const $isEmailCorrect: Store<boolean> = $emailError.map(
 export const $isPasswordCorrect: Store<boolean> = $passwordError.map(
   state => state === null
 );
-
 const $signInForm: SignInFormStore = createStoreObject({
   email: $email,
   password: $password
 });
+const $isFormValid: Store<boolean> = combine(
+  $isEmailCorrect,
+  $isPasswordCorrect,
+  (isEmailCorrect, isPasswordCorrect) => isEmailCorrect && isPasswordCorrect
+);
 
 const trimEvent = (e: ChangeEvent<HTMLInputElement>): string =>
   e.target.value.trim();
@@ -78,31 +81,30 @@ $password
   .on(passwordChanged.map(trimEvent), (_, value): string => value)
   .reset(formMounted)
   .reset(formUnmounted);
-$emailError.on(formValidated, (_, { email }) => email);
-$passwordError.on(formValidated, (_, { password }) => password);
-
+$emailError.on(formValidated, (_, { email }) => validateEmail(email));
+$passwordError.on(formValidated, (_, { password }) =>
+  password.length > 0 ? null : 'Пожалуйста, введите пароль.'
+);
 $signInForm.reset(formMounted).reset(formUnmounted);
 
-sample($signInForm, formSubmitted).watch(({ email, password }) => {
-  const validated: ErrorsSchema = {
-    email: validateEmail(email),
-    password: password.length > 0 ? null : 'Пожалуйста, введите пароль.'
-  };
-
-  formValidated(validated);
+forward({
+  from: sample($signInForm, formSubmitted),
+  to: formValidated
 });
 
-sample($signInForm, formValidated).watch(signInProcessing);
+guard({
+  source: formValidated,
+  filter: $isFormValid,
+  target: signInFx
+});
 
-signInProcessing.use(({ email, password }: SignInForm) =>
-  signInUser(email, password)
-);
+signInFx.use(({ email, password }: SignInForm) => signInUser(email, password));
 
-signInProcessing.done.watch(() => {
+signInFx.done.watch(() => {
   history.push(routes.teams);
 });
 
-signInProcessing.fail.watch(({ error }) => {
+signInFx.fail.watch(({ error }) => {
   const errorText: string = getErrorText(error.code, authErrors);
   notifyError(errorText);
 });
