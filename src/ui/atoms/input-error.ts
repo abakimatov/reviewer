@@ -3,6 +3,7 @@ import { fontFamily } from './typography';
 
 type Props = {
   error: boolean;
+  name: string;
 };
 
 export const InputError = styled.span<Props>`

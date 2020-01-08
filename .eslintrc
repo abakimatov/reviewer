@@ -33,5 +33,11 @@
       }
     }
   },
-  "parser": "@typescript-eslint/parser"
+  "parser": "@typescript-eslint/parser",
+  "globals": {
+    "page": true,
+    "browser": true,
+    "context": true,
+    "jestPuppeteer": true
+  }
 }

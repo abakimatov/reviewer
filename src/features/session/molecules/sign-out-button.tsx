@@ -16,7 +16,9 @@ export const SignOutButton: React.FC<Props> = ({ onSignedOut }: Props) => (
   </Button>
 );
 
-const Button = styled(KitButtom)`
+const Button = styled(KitButtom).attrs(() => ({
+  'data-action': 'logout'
+}))`
   border: none;
   background: none;
   padding: 0;
