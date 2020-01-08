@@ -5,28 +5,33 @@ import { input, InputError } from '../atoms';
 
 type Props = {
   type: string;
-  id: string;
+  name: string;
   value: string;
   error: string;
+  id?: string;
   handleChange: (e: React.ChangeEvent) => void;
 };
 
 export const SimpleInput: React.FC<Props> = ({
   type,
-  id,
+  name,
   value,
   error,
-  handleChange
+  handleChange,
+  id
 }) => (
   <Root>
     <Input
-      type={type}
       id={id}
+      type={type}
+      name={name}
       value={value}
       onChange={handleChange}
       error={!!error}
     />
-    <InputError error={!!error}>{error}</InputError>
+    <InputError name={`${name}-error`} error={!!error}>
+      {error}
+    </InputError>
   </Root>
 );
 

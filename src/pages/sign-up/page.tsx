@@ -44,6 +44,7 @@ const EmailInput: React.FC = () => {
       <InputLabel htmlFor="email">Email</InputLabel>
       <SimpleInput
         id="email"
+        name="email"
         type="email"
         value={email}
         error={emailError}
@@ -62,6 +63,7 @@ const PasswordInput: React.FC = () => {
       <InputLabel htmlFor="password">Пароль</InputLabel>
       <SimpleInput
         id="password"
+        name="password"
         type="password"
         value={password}
         error={passwordError}
@@ -80,6 +82,7 @@ const ConfirmPasswordInput: React.FC = () => {
       <InputLabel htmlFor="confirmPassword">Подтверждение пароля</InputLabel>
       <SimpleInput
         id="confirmPassword"
+        name="confirmPassword"
         type="password"
         value={confirmPassword}
         error={confirmPasswordError}
@@ -131,7 +134,9 @@ const LogoWrap = styled.div`
   top: 40px;
 `;
 
-const Form = styled.form`
+const Form = styled.form.attrs(() => ({
+  'data-test-id': 'sign-up-form'
+}))`
   width: 100%;
   padding: 0 320px;
 `;
