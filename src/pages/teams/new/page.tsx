@@ -35,6 +35,7 @@ const NameInput: React.FC = (): JSX.Element => {
       <SimpleInput
         type="text"
         id="name"
+        name="name"
         value={name}
         error={nameError}
         handleChange={nameChanged}

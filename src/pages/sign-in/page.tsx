@@ -41,6 +41,7 @@ const EmailInput: React.FC = () => {
       <SimpleInput
         type="email"
         id="email"
+        name="email"
         value={email}
         error={emailError}
         handleChange={emailChanged}
@@ -59,6 +60,7 @@ const PasswordInput: React.FC = () => {
       <SimpleInput
         type="password"
         id="password"
+        name="password"
         value={password}
         error={passwordError}
         handleChange={passwordChanged}
