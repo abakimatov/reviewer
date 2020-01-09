@@ -109,7 +109,9 @@ const LogoWrap = styled.div`
   top: 40px;
 `;
 
-const Form = styled.form`
+const Form = styled.form.attrs(() => ({
+  name: 'sign-in-form'
+}))`
   width: 100%;
   padding: 0 320px;
 `;
