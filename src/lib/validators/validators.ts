@@ -1,6 +1,6 @@
 const emailRegexp: RegExp = /.{2,}@.{2,}/;
 export const validateEmail = (value: string): string | null => {
-  if (value.length === 0) return 'Пожалуйста введите ваш email.';
+  if (value.length === 0) return 'Пожалуйста, введите ваш email.';
   if (!emailRegexp.test(value)) return 'Пожалуйста, введите корректный email.';
 
   return null;

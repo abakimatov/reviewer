@@ -32,7 +32,7 @@ describe('SignUp flow', () => {
     await expect(page).toFillForm('[data-test-id="sign-up-form"]', signUpData);
   });
 
-  test('Should be email empty error', async () => {
+  test('It should be email empty error', async () => {
     const email = '';
     const password = 'ASDKosakdpasadjJ23242';
     const confirmPassword = 'ASDKosakdpasadjJ23242';
@@ -40,11 +40,11 @@ describe('SignUp flow', () => {
     await fillForm({ email, password, confirmPassword });
     await page.click('button[type="submit"]');
     await expect(page).toMatchElement('[name="email-error"]', {
-      text: 'Пожалуйста введите ваш email.'
+      text: 'Пожалуйста, введите ваш email.'
     });
   });
 
-  test('Should be email validation error', async () => {
+  test('It should be email validation error', async () => {
     const email = 'john.doe';
     const password = 'ASDKosakdpasadjJ23242';
     const confirmPassword = 'ASDKosakdpasadjJ23242';
@@ -56,7 +56,7 @@ describe('SignUp flow', () => {
     });
   });
 
-  test('Should be password empty error', async () => {
+  test('It should be password empty error', async () => {
     const email = 'john.doe@gmail.com';
     const password = '';
     const confirmPassword = 'ASDKosakdpasadjJ23242';
@@ -68,7 +68,7 @@ describe('SignUp flow', () => {
     });
   });
 
-  test('Should be password validation error', async () => {
+  test('It should be password validation error', async () => {
     const email = 'john.doe@gmail.com';
     const password = 'diasjdihhfa';
     const confirmPassword = 'ASDKosakdpasadjJ23242';
@@ -81,7 +81,7 @@ describe('SignUp flow', () => {
     });
   });
 
-  test('Should be confirmPassword equal error', async () => {
+  test('It should be confirmPassword equal error', async () => {
     const email = 'john.doe@gmail.com';
     const password = 'diasjdihhfa';
     const confirmPassword = 'ASDKosakdpasadjJ23242';
@@ -94,7 +94,7 @@ describe('SignUp flow', () => {
   });
 });
 
-describe('Sign up account which created before', () => {
+describe('It sign up account which created before', () => {
   const email = faker.internet.email();
   const password = 'ASDKosakdpasadjJ23242';
   const confirmPassword = 'ASDKosakdpasadjJ23242';
@@ -107,7 +107,7 @@ describe('Sign up account which created before', () => {
     await page.reload();
   });
 
-  test('Should be able a sign up success', async () => {
+  test('It should be able a sign up success', async () => {
     await page.waitForSelector('[data-test-id="sign-up-form"]');
     await fillForm({ email, password, confirmPassword });
     await page.click('button[type="submit"]');
@@ -119,7 +119,7 @@ describe('Sign up account which created before', () => {
     await expect(url).toBe('http://localhost:3000/teams');
   });
 
-  test('Should be successful logout', async () => {
+  test('It should be successful logout', async () => {
     await page.waitFor(2000);
     await page.waitForSelector('button[data-action="logout"]');
     await page.click('button[data-action="logout"]');
@@ -130,7 +130,7 @@ describe('Sign up account which created before', () => {
     expect(url).toBe('http://localhost:3000/');
   });
 
-  test('Should be able a sign up fail', async () => {
+  test('It should be able a sign up fail', async () => {
     await page.goto('http://localhost:3000/sign-up');
     await page.waitForSelector('[data-test-id="sign-up-form');
 
