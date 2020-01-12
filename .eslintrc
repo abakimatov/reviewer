@@ -46,6 +46,7 @@
     "browser": true,
     "context": true,
     "jestPuppeteer": true,
-    "cy": true
+    "cy": true,
+    "Cypress": true
   }
 }

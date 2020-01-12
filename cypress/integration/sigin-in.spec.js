@@ -52,7 +52,7 @@ describe('Sign-in flow', () => {
     );
   });
 
-  it('should be succes login and then succes logout', () => {
+  it('should be success login and then success logout', () => {
     cy.fixture('test-acc.json').then(testAcc => {
       cy.get(selectors.emailField).type(testAcc.email);
       cy.get(selectors.passwordField).type(testAcc.password);
