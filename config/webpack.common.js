@@ -1,6 +1,4 @@
 const webpack = require('webpack');
-const path = require('path');
-const fs = require('fs');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { resolvePath } = require('./resolvePath');
@@ -30,8 +28,28 @@ module.exports = {
         use: ['html-loader']
       },
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        test: /\.(css|scss)$/,
+        use: [
+          'style-loader',
+          { loader: 'css-loader', options: { modules: true } },
+          'sass-loader'
+        ]
+      },
+      {
+        test: /\.less$/,
+        use: [
+          'style-loader',
+          'css-loader',
+          {
+            loader: 'less-loader',
+            options: {
+              javascriptEnabled: true,
+              prependData: `@require '${resolvePath(
+                'src/ui/theme/global.scss'
+              )}'`
+            }
+          }
+        ]
       },
       {
         test: /\.(png|svg|jpg|gif)$/,
@@ -64,6 +82,6 @@ module.exports = {
     }),
     new HtmlWebPackPlugin({
       template: resolvePath('public/index.html')
-    })
+    }),
   ]
 };

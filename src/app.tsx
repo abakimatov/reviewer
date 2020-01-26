@@ -1,6 +1,5 @@
 import * as React from 'react';
 import { ThemeProvider } from 'styled-components';
-import { ToastContainer } from 'react-toastify';
 import { User } from 'firebase';
 
 import { firebase } from '@lib/firebase';
@@ -10,7 +9,7 @@ import {
   loadingStarted,
   loadingFinished
 } from '@features/page-loading';
-import { GlobalStyles, theme } from '@theme';
+import { theme } from '@theme';
 import { Routes } from '@pages';
 
 export const App: React.FC = () => {
@@ -26,9 +25,7 @@ export const App: React.FC = () => {
 
   return (
     <>
-      <ToastContainer />
       <ThemeProvider theme={theme}>
-        <GlobalStyles />
         <LoadingLayer />
         {isReady && <Routes />}
       </ThemeProvider>

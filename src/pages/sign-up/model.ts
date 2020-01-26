@@ -1,163 +1,109 @@
-import { ChangeEvent } from 'react';
 import {
   Store,
   Effect,
-  combine,
-  sample,
-  createEffect,
+  Event,
   createEvent,
   createStore,
-  createStoreObject,
-  forward,
+  createEffect,
+  sample,
   guard
 } from 'effector';
+import { Schema } from 'rsuite';
 
-import { firebase } from '@lib/firebase';
 import { history } from '@lib/routing';
+import { firebase } from '@lib/firebase';
+import { validatePassword } from '@lib/validators';
 import { notifyError, getErrorText } from '@lib/notifications';
 import { Fetching, createFetching } from '@lib/fetching';
-import {
-  validateEmail,
-  validatePassword,
-  validatePasswordsEqual
-} from '@lib/validators';
 import { authErrors, routes } from '@lib/constants';
 import { createUser } from '@features/session';
 
-type FormErrorsSchema = {
-  email: string | null;
-  password: string | null;
-  confirmPassword: string | null;
-};
-
-type SignUpForm = Store<{
-  email: string;
-  password: string;
-  confirmPassword: string;
-}>;
-
-type FormPlainObject = {
+type SignUpForm = {
   email: string;
   password: string;
   confirmPassword: string;
 };
 
-export const emailChanged = createEvent<ChangeEvent<HTMLInputElement>>();
-export const passwordChanged = createEvent<ChangeEvent<HTMLInputElement>>();
-export const confirmPasswordChanged = createEvent<
-  ChangeEvent<HTMLInputElement>
->();
-export const formSubmitted = createEvent<void>();
-export const formValidated = createEvent<FormErrorsSchema>();
-export const formMounted = createEvent<void>();
-export const formUnmounted = createEvent<void>();
+type Errors = {
+  email?: string;
+  password?: string;
+  confirmPassword?: string;
+};
 
-const signUpFx: Effect<
-  FormPlainObject,
+const { StringType } = Schema.Types;
+
+export const validationSchema = Schema.Model({
+  email: StringType()
+    .isRequired('Пожалуйста, введите email.')
+    .isEmail('Пожалуйста, введите корректный email.'),
+  password: StringType()
+    .isRequired('Пожалуйста, введите пароль')
+    .addRule(
+      value => value.length > 7,
+      'Пароль должен содержать не меньше 8 символов.'
+    )
+    .addRule(
+      validatePassword,
+      'Пароль должен содержать заглавные и прописные символы, а также числа.'
+    ),
+  confirmPassword: StringType()
+    .isRequired('Пожалуйста, подтвердите пароль.')
+    .addRule(
+      (confirmPassword, { password }) => confirmPassword === password,
+      'Введенный пароль должен совпадать с предыдущим.'
+    )
+});
+
+export const $formValues: Store<SignUpForm> = createStore({
+  email: '',
+  password: '',
+  confirmPassword: ''
+});
+export const $formErrors: Store<Errors> = createStore({});
+export const $isFormValid: Store<boolean> = $formErrors.map(
+  errors => Object.keys(errors).length === 0
+);
+
+export const formChanged: Event<SignUpForm> = createEvent();
+export const formValidated: Event<Errors> = createEvent();
+export const formSubmitted: Event<void> = createEvent();
+export const formSended: Event<void> = createEvent();
+export const formMounted: Event<void> = createEvent();
+export const formUnmounted: Event<void> = createEvent();
+
+export const signUpFx: Effect<
+  SignUpForm,
   firebase.auth.UserCredential,
   firebase.auth.Error
 > = createEffect();
 export const signUpFetching: Fetching = createFetching(signUpFx);
 
-export const $email: Store<string> = createStore<string>('');
-export const $emailError: Store<string | null> = createStore(null);
-export const $isEmailCorrect: Store<boolean> = combine(
-  $email,
-  $emailError,
-  (email, emailError) => email.length > 0 && emailError === null
-);
+$formValues
+  .on(formChanged, (_, values) => values)
+  .reset(formMounted, formUnmounted);
+$formErrors
+  .on(formValidated, (_, errors) => errors)
+  .reset(formMounted, formUnmounted);
 
-export const $password: Store<string> = createStore<string>('');
-export const $passwordError: Store<string | null> = createStore(null);
-export const $isPasswordCorrect: Store<boolean> = combine(
-  $password,
-  $passwordError,
-  (password, passwordError) => password.length > 0 && passwordError === null
-);
-
-export const $confirmPassword: Store<string> = createStore<string>('');
-export const $confirmPasswordError: Store<string | null> = createStore(null);
-export const $isConfirmPasswordCorrect: Store<boolean> = combine(
-  $confirmPassword,
-  $confirmPasswordError,
-  (confirmPassword, confirmPasswordError) =>
-    confirmPassword.length > 0 && confirmPasswordError === null
-);
-
-export const $signUpForm: SignUpForm = createStoreObject({
-  email: $email,
-  password: $password,
-  confirmPassword: $confirmPassword
-});
-
-export const $isFormValid: Store<boolean> = combine(
-  $isEmailCorrect,
-  $isPasswordCorrect,
-  $isConfirmPasswordCorrect,
-  (isEmailCorrect, isPasswordCorrect, isConfirmPasswordCorrect): boolean =>
-    isEmailCorrect && isPasswordCorrect && isConfirmPasswordCorrect
-);
-
-const trimEvent = (event: ChangeEvent<HTMLInputElement>): string =>
-  event.target.value.trim();
-
-$email
-  .on(emailChanged.map(trimEvent), (_: string, email: string): string => email)
-  .reset(formMounted)
-  .reset(formUnmounted);
-$password
-  .on(
-    passwordChanged.map(trimEvent),
-    (_: string, password: string): string => password
-  )
-  .reset(formMounted)
-  .reset(formUnmounted);
-$confirmPassword
-  .on(
-    confirmPasswordChanged.map(trimEvent),
-    (_: string, confirmPassword: string): string => confirmPassword
-  )
-  .reset(formMounted)
-  .reset(formUnmounted);
-
-$emailError
-  .on(formValidated, (_, { email }) => validateEmail(email))
-  .on(emailChanged, () => null);
-$passwordError
-  .on(formValidated, (_, { password }) => validatePassword(password))
-  .on(passwordChanged, () => null);
-$confirmPasswordError
-  .on(formValidated, (_, { password, confirmPassword }) =>
-    validatePasswordsEqual(password, confirmPassword)
-  )
-  .on(confirmPasswordChanged, () => null);
-
-$signUpForm.reset(formMounted).reset(formUnmounted);
-
-forward({
-  from: sample($signUpForm, formSubmitted),
-  to: formValidated
-});
-
-guard({
-  source: sample($signUpForm, formValidated),
-  filter: $isFormValid,
-  target: signUpFx
-});
-
-signUpFx.use(
-  ({
-    email,
-    password
-  }: FormPlainObject): Promise<firebase.auth.UserCredential> =>
-    createUser(email, password)
-);
+signUpFx.use(({ email, password }: SignUpForm) => createUser(email, password));
 
 signUpFx.done.watch(() => {
   history.push(routes.teams);
 });
 
-signUpFx.fail.watch(({ error }): void => {
-  const errText: string = getErrorText(error.code, authErrors);
-  notifyError(errText);
+signUpFx.fail.watch(({ error }) => {
+  const errorText: string = getErrorText(error.code, authErrors);
+  notifyError(errorText);
+});
+
+guard({
+  source: formSubmitted,
+  filter: $isFormValid,
+  target: formSended
+});
+
+sample({
+  source: $formValues,
+  clock: formSended,
+  target: signUpFx
 });

@@ -1,3 +1,3 @@
-export { CenteredContent } from './centered-content';
-export { DefaultLayout } from './default-layout';
+export { CenteredContent } from './centered';
+export { DefaultLayout } from './default';
 export { TopBar } from './top-bar';

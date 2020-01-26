@@ -1,3 +1,3 @@
 export { createUser, signInUser } from './api';
 export { userChanged, $user } from './user';
-export { HeaderAccountActions } from './organisms';
+export { HeaderAccount } from './organisms';

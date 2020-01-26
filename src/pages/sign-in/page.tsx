@@ -1,76 +1,40 @@
 import * as React from 'react';
 import { useStore } from 'effector-react';
+import {
+  Form,
+  FormControl,
+  FormGroup,
+  ControlLabel,
+  Button,
+  Icon
+} from 'rsuite';
 
 import { routes } from '@lib/constants';
-import { styled } from '@theme';
+import { CenteredContent, Logo, PrimaryLink } from '@ui';
 import {
-  CenteredContent,
-  SimpleInput,
-  Logo,
-  InputLabel,
-  Button,
-  PrimaryLink,
-  lightTitle,
-  grayText
-} from '@ui';
-import {
-  $email,
-  $password,
-  $emailError,
-  $passwordError,
-  emailChanged,
-  passwordChanged,
+  validationSchema,
+  $formValues,
+  $formErrors,
+  formChanged,
+  formValidated,
   formSubmitted,
   formMounted,
   formUnmounted,
   signInFetching
 } from './model';
+import s from './styles.scss';
 
-const handleSubmit = (event: React.SyntheticEvent): void => {
-  event.preventDefault();
-  formSubmitted();
-};
+const SignIn: React.FC = (): JSX.Element => {
+  const formRef = React.useRef(null);
 
-const EmailInput: React.FC = () => {
-  const email: string = useStore($email);
-  const emailError: string = useStore($emailError);
-
-  return (
-    <>
-      <InputLabel htmlFor="email">Email</InputLabel>
-      <SimpleInput
-        type="email"
-        id="email"
-        name="email"
-        value={email}
-        error={emailError}
-        handleChange={emailChanged}
-      />
-    </>
-  );
-};
-
-const PasswordInput: React.FC = () => {
-  const password: string = useStore($password);
-  const passwordError: string = useStore($passwordError);
-
-  return (
-    <>
-      <InputLabel htmlFor="password">Пароль</InputLabel>
-      <SimpleInput
-        type="password"
-        id="password"
-        name="password"
-        value={password}
-        error={passwordError}
-        handleChange={passwordChanged}
-      />
-    </>
-  );
-};
-
-const SignIn: React.FC = () => {
   const isLoading = useStore(signInFetching.isLoading);
+  const values = useStore($formValues);
+  const errors = useStore($formErrors);
+
+  const onSubmit = React.useCallback(() => {
+    formRef.current.check();
+    formSubmitted();
+  }, []);
 
   React.useEffect(() => {
     formMounted();
@@ -80,60 +44,51 @@ const SignIn: React.FC = () => {
 
   return (
     <CenteredContent>
-      <LogoWrap>
+      <div className={s.logoContainer}>
         <Logo size="large" />
-      </LogoWrap>
-      <Form>
-        <Title>Вход</Title>
-        <EmailInput />
-        <PasswordInput />
-        <Button
-          handler={handleSubmit}
-          loading={isLoading}
-          type="submit"
-          variant="primary"
+      </div>
+      <section className={s.mainWrapper}>
+        <h3 className={s.title}>Вход</h3>
+        <Form
+          ref={formRef}
+          onChange={formChanged}
+          onCheck={formValidated}
+          model={validationSchema}
+          formDefaultValue={values}
+          formError={errors}
+          checkTrigger="blur"
         >
-          Войти
-        </Button>
-        <ToRegister>
-          <ToRegisterText>Еще нет аккаунта?</ToRegisterText>
-          <PrimaryLink to={routes.signUp}>Зарегистрироваться</PrimaryLink>
-        </ToRegister>
-      </Form>
+          <FormGroup>
+            <ControlLabel htmlFor="email">Email</ControlLabel>
+            <FormControl type="email" name="email" errorPlacement="topEnd" />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel htmlFor="password">Пароль</ControlLabel>
+            <FormControl
+              type="password"
+              name="password"
+              errorPlacement="topEnd"
+            />
+          </FormGroup>
+          <Button
+            onClick={onSubmit}
+            loading={isLoading}
+            icon={<Icon icon="sign-in" />}
+            size="lg"
+            placement="left"
+            type="submit"
+            appearance="primary"
+          >
+            Войти
+          </Button>
+          <div className={s.signUpOption}>
+            <span className={s.text}>Еще нет аккаунта?</span>
+            <PrimaryLink to={routes.signUp}>Зарегистрируйтесь</PrimaryLink>
+          </div>
+        </Form>
+      </section>
     </CenteredContent>
   );
 };
-
-const LogoWrap = styled.div`
-  position: absolute;
-  top: 40px;
-`;
-
-const Form = styled.form.attrs(() => ({
-  name: 'sign-in-form'
-}))`
-  width: 100%;
-  padding: 0 320px;
-`;
-
-const Title = styled.h1`
-  ${lightTitle};
-
-  margin-bottom: 50px;
-`;
-
-const ToRegister = styled.div`
-  padding: 15px 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ToRegisterText = styled.span`
-  ${grayText};
-
-  margin-right: 10px;
-`;
 
 export default SignIn;

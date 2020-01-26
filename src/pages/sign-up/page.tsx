@@ -1,99 +1,40 @@
 import * as React from 'react';
 import { useStore } from 'effector-react';
+import {
+  Form,
+  FormControl,
+  FormGroup,
+  ControlLabel,
+  Button,
+  Icon
+} from 'rsuite';
 
 import { routes } from '@lib/constants';
-import { styled } from '@theme';
+import { CenteredContent, Logo, PrimaryLink } from '@ui';
 import {
-  CenteredContent,
-  SimpleInput,
-  Logo,
-  InputLabel,
-  Button,
-  PrimaryLink,
-  lightTitle,
-  grayText
-} from '@ui';
-
-import {
-  $email,
-  $password,
-  $confirmPassword,
-  $emailError,
-  $passwordError,
-  $confirmPasswordError,
-  emailChanged,
-  passwordChanged,
-  confirmPasswordChanged,
+  validationSchema,
+  $formValues,
+  $formErrors,
+  formChanged,
+  formValidated,
   formSubmitted,
   formMounted,
   formUnmounted,
   signUpFetching
 } from './model';
+import s from './styles.scss';
 
-const handleSubmit = (event: React.SyntheticEvent): void => {
-  event.preventDefault();
-  formSubmitted();
-};
+const SignIn: React.FC = (): JSX.Element => {
+  const formRef = React.useRef(null);
 
-const EmailInput: React.FC = () => {
-  const email: string = useStore($email);
-  const emailError: string | null = useStore($emailError);
+  const isLoading = useStore(signUpFetching.isLoading);
+  const values = useStore($formValues);
+  const errors = useStore($formErrors);
 
-  return (
-    <>
-      <InputLabel htmlFor="email">Email</InputLabel>
-      <SimpleInput
-        id="email"
-        name="email"
-        type="email"
-        value={email}
-        error={emailError}
-        handleChange={emailChanged}
-      />
-    </>
-  );
-};
-
-const PasswordInput: React.FC = () => {
-  const password: string = useStore($password);
-  const passwordError: string | null = useStore($passwordError);
-
-  return (
-    <>
-      <InputLabel htmlFor="password">Пароль</InputLabel>
-      <SimpleInput
-        id="password"
-        name="password"
-        type="password"
-        value={password}
-        error={passwordError}
-        handleChange={passwordChanged}
-      />
-    </>
-  );
-};
-
-const ConfirmPasswordInput: React.FC = () => {
-  const confirmPassword: string = useStore($confirmPassword);
-  const confirmPasswordError: string | null = useStore($confirmPasswordError);
-
-  return (
-    <>
-      <InputLabel htmlFor="confirmPassword">Подтверждение пароля</InputLabel>
-      <SimpleInput
-        id="confirmPassword"
-        name="confirmPassword"
-        type="password"
-        value={confirmPassword}
-        error={confirmPasswordError}
-        handleChange={confirmPasswordChanged}
-      />
-    </>
-  );
-};
-
-const SignUp: React.FC = () => {
-  const isLoading: boolean = useStore(signUpFetching.isLoading);
+  const onSubmit = React.useCallback(() => {
+    formRef.current.check();
+    formSubmitted();
+  }, []);
 
   React.useEffect(() => {
     formMounted();
@@ -103,62 +44,61 @@ const SignUp: React.FC = () => {
 
   return (
     <CenteredContent>
-      <LogoWrap>
+      <div className={s.logoContainer}>
         <Logo size="large" />
-      </LogoWrap>
-
-      <Form>
-        <Title>Регистрация</Title>
-        <EmailInput />
-        <PasswordInput />
-        <ConfirmPasswordInput />
-        <Button
-          type="submit"
-          handler={handleSubmit}
-          loading={isLoading}
-          variant="primary"
+      </div>
+      <section className={s.mainWrapper}>
+        <h3 className={s.title}>Регистрация</h3>
+        <Form
+          ref={formRef}
+          onChange={formChanged}
+          onCheck={formValidated}
+          model={validationSchema}
+          formDefaultValue={values}
+          formError={errors}
+          checkTrigger="blur"
         >
-          Зарегистрироваться
-        </Button>
-        <ToLogin>
-          <ToLoginText>Уже есть аккаунт?</ToLoginText>
-          <PrimaryLink to={routes.signIn}>Войти</PrimaryLink>
-        </ToLogin>
-      </Form>
+          <FormGroup>
+            <ControlLabel htmlFor="email">Email</ControlLabel>
+            <FormControl type="email" name="email" errorPlacement="topEnd" />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel htmlFor="password">Пароль</ControlLabel>
+            <FormControl
+              type="password"
+              name="password"
+              errorPlacement="topEnd"
+            />
+          </FormGroup>
+          <FormGroup>
+            <ControlLabel htmlFor="confirmPassword">
+              Подтверждение пароля
+            </ControlLabel>
+            <FormControl
+              type="password"
+              name="confirmPassword"
+              errorPlacement="topEnd"
+            />
+          </FormGroup>
+          <Button
+            onClick={onSubmit}
+            loading={isLoading}
+            icon={<Icon icon="sign-in" />}
+            size="lg"
+            placement="left"
+            type="submit"
+            appearance="primary"
+          >
+            Войти
+          </Button>
+          <div className={s.signInOption}>
+            <span className={s.text}>Уже есть аккаунт?</span>
+            <PrimaryLink to={routes.signUp}>Войдите</PrimaryLink>
+          </div>
+        </Form>
+      </section>
     </CenteredContent>
   );
 };
 
-const LogoWrap = styled.div`
-  position: absolute;
-  top: 40px;
-`;
-
-const Form = styled.form.attrs(() => ({
-  'data-test-id': 'sign-up-form'
-}))`
-  width: 100%;
-  padding: 0 320px;
-`;
-
-const Title = styled.h1`
-  ${lightTitle};
-
-  margin-bottom: 50px;
-`;
-
-const ToLogin = styled.div`
-  padding: 15px 0;
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-`;
-
-const ToLoginText = styled.span`
-  ${grayText};
-
-  margin-right: 10px;
-`;
-
-export default SignUp;
+export default SignIn;
