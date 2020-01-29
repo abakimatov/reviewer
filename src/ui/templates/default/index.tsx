@@ -14,6 +14,6 @@ export const DefaultLayout: React.FC<Props> = ({
 }: Props): JSX.Element => (
   <Container className={s.pageWrapper}>
     <Header>{header}</Header>
-    <Content className={s.contentWrapper}>{children}</Content>
+    <Content>{children}</Content>
   </Container>
 );

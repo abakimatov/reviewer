@@ -23,6 +23,7 @@ export const pageMounted: Event<void> = createEvent();
 export const removeTeamStarted: Event<string> = createEvent();
 export const teamRemoved: Event<ClickEvent> = createEvent();
 export const removeTeamCanceled: Event<void> = createEvent();
+export const teamCreated: Event<{ result: Team }> = createEvent();
 
 export const $teams: Store<Teams> = createStore([]);
 export const $removingTeamId: Store<string | null> = createStore(null);
@@ -43,7 +44,13 @@ $teams
   .on(fetchTeamsFx.done, (_, { result }): Teams => result)
   .on(removeTeamFx.done, (teams, { result: teamId }) =>
     teams.filter(({ id }) => id !== teamId)
+  )
+  .on(teamCreated, (teams, { result }) =>
+    [...teams, result].sort(
+      (a: Team, b: Team): number => b.createdAt - a.createdAt
+    )
   );
+
 $removingTeamId
   .on(removeTeamStarted, (_, id: string) => id)
   .reset(pageMounted, removeTeamCanceled, removeTeamFx.done, removeTeamFx.fail);

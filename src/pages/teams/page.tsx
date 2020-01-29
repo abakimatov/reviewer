@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { useStore } from 'effector-react';
-import { Grid, Row, Col, IconButton, Icon } from 'rsuite';
+import { Grid, Row, IconButton, Icon } from 'rsuite';
 
 import { Team } from '@typings/team';
 import { DefaultLayout, Header, Empty } from '@ui';
