@@ -9,7 +9,7 @@ module.exports = function(api) {
     '@babel/preset-typescript',
     '@babel/preset-react'
   ];
-  const plugins = [['babel-plugin-styled-components', { ssr: false, pure: true }]];
+  const plugins = [];
 
   return {
     presets,
