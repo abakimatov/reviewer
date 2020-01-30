@@ -1,72 +1,50 @@
 import * as React from 'react';
 import { useStore } from 'effector-react';
+import { Grid, Row, IconButton, Icon } from 'rsuite';
 
 import { Team } from '@typings/team';
-import { TeamCard } from '@features/teams';
-import { routes } from '@lib/constants';
-import { styled } from '@theme';
-import {
-  DefaultLayout,
-  Header,
-  EmptyPlaceholder,
-  TopBar,
-  LinkButton,
-  CardLink
-} from '@ui';
-import { $teams, $teamRemovingId, pageMounted, teamRemoved } from './model';
-
-const List: React.FC = (): JSX.Element => {
-  const teams = useStore($teams);
-  const removingId = useStore($teamRemovingId);
-  return (
-    <Root>
-      {teams.map((team: Team) => (
-        <CardWrapper key={team.id}>
-          <CardLink to="/">
-            <TeamCard
-              onRemove={teamRemoved}
-              loading={team.id === removingId}
-              removeEnabled={removingId === null}
-              {...team}
-            />
-          </CardLink>
-        </CardWrapper>
-      ))}
-    </Root>
-  );
-};
+import { DefaultLayout, Header, Empty } from '@ui';
+import { $teams, pageMounted, removeTeamStarted } from './models/teams';
+import { modalOpened } from './models/new-team';
+import { TeamCard, RemoveModal, CreateModal } from './organisms';
+import s from './styles.pcss';
 
 const Teams: React.FC = (): JSX.Element => {
-  const teams = useStore($teams);
+  const teams: Team[] = useStore($teams);
 
   React.useEffect(() => {
     pageMounted();
   }, []);
 
+  const isTeamsEmpty: boolean = teams.length === 0;
+
   return (
     <DefaultLayout header={<Header />}>
-      <TopBar>
-        <LinkButton to={routes.newTeam}>Создать команду</LinkButton>
-      </TopBar>
-      {teams.length === 0 && <EmptyPlaceholder msg="Список команд пуст" />}
-      {teams.length > 0 && <List />}
+      <div className={s.topBarWrapper}>
+        <IconButton
+          onClick={modalOpened}
+          icon={<Icon icon="plus-square-o" />}
+          appearance="primary"
+          placement="left"
+        >
+          Добавить команду
+        </IconButton>
+      </div>
+
+      {!isTeamsEmpty && (
+        <Grid fluid>
+          <Row>
+            {teams.map((team: Team) => (
+              <TeamCard key={team.id} onRemove={removeTeamStarted} {...team} />
+            ))}
+          </Row>
+        </Grid>
+      )}
+      {isTeamsEmpty && <Empty msg="cписок команд пуст" />}
+      <RemoveModal />
+      <CreateModal />
     </DefaultLayout>
   );
 };
-
-const Root = styled.ul`
-  list-style: none;
-  margin: 0;
-  padding: 0;
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-`;
-
-const CardWrapper = styled.li`
-  width: 33%;
-  padding: 10px;
-  height: 100%;
-`;
 
 export default Teams;

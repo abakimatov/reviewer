@@ -7,13 +7,8 @@ export const validateEmail = (value: string): string | null => {
 };
 
 const passwordRegexp: RegExp = /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?\d).{8,}$/;
-export const validatePassword = (value: string): string | null => {
-  if (value.length < 8) return 'Пароль должен содержать не меньше 8 символов.';
-  if (!passwordRegexp.test(value))
-    return 'Пароль должен содержать заглавные и прописные символы, а также числа.';
-
-  return null;
-};
+export const validatePassword = (value: string): boolean =>
+  passwordRegexp.test(value);
 
 export const validatePasswordsEqual = (
   password: string,

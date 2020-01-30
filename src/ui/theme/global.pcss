@@ -1,0 +1,77 @@
+$black: './fonts/Nunito-Black.ttf';
+$extraBold: './fonts/Nunito-ExtraBold.ttf';
+$bold: './fonts/Nunito-Bold.ttf';
+$semiBold: './fonts/Nunito-SemiBold.ttf';
+$regular: './fonts/Nunito-Regular.ttf';
+$light: './fonts/Nunito-Light.ttf';
+$extraLight: './fonts/Nunito-ExtraLight.ttf';
+
+@font-face {
+  font-family: 'Nunito';
+  src: local('Nunito'), url($black) format('truetype');
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: local('Nunito'), url($extraBold) format('truetype');
+  font-weight: 800;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: local('Nunito'), url($bold) format('truetype');
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: local('Nunito'), url($semiBold) format('truetype');
+  font-weight: 600;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: local('Nunito'), url($regular) format('truetype');
+  font-weight: 500;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: local('Nunito'), url($light) format('truetype');
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: 'Nunito';
+  src: local('Nunito'), url($extraLight) format('truetype');
+  font-weight: 300;
+}
+
+:root {
+  --error: #e45d5d;
+  --base-color: #f5a623;
+  --light: #e9ebf0;
+  --background: #0f131a;
+  --secondary-background: #1a1d24;
+
+  --s14: 14px;
+  --s16: 16px;
+  --s18: 18px;
+  --s20: 20px;
+  --s22: 22px;
+  --s24: 24px;
+  --s34: 34px;
+}
+
+html,
+body,
+body > div[id='root'] {
+  font-family: 'Nunito', sans-serif;
+  width: 100%;
+  height: 100%;
+}
+
+a {
+  text-decoration: none !important;
+}

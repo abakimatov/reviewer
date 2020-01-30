@@ -6,16 +6,24 @@
   "extends": ["airbnb", "prettier"],
   "plugins": ["prettier"],
   "rules": {
-    "react/jsx-filename-extension": [1, { "extensions": [".js", ".jsx", ".tsx"] }],
+    "react/jsx-filename-extension": [
+      1,
+      { "extensions": [".js", ".jsx", ".tsx"] }
+    ],
     "react/prop-types": 0,
     "react/jsx-props-no-spreading": 0,
     "import/no-extraneous-dependencies": [
       "error",
-      { "devDependencies": true, "optionalDependencies": false, "peerDependencies": false }
+      {
+        "devDependencies": true,
+        "optionalDependencies": false,
+        "peerDependencies": false
+      }
     ],
     "import/prefer-default-export": 0,
     "no-unused-vars": 0,
-    "prettier/prettier": ["error"]
+    "prettier/prettier": 1,
+    "spaced-comment": 0
   },
   "settings": {
     "import/parsers": {
@@ -29,7 +37,7 @@
         "moduleDirectory": ["node_modules"]
       },
       "typescript": {
-        "alwaysTryTypes": true,
+        "alwaysTryTypes": true
       }
     }
   },
@@ -38,6 +46,8 @@
     "page": true,
     "browser": true,
     "context": true,
-    "jestPuppeteer": true
+    "jestPuppeteer": true,
+    "cy": true,
+    "Cypress": true
   }
 }

@@ -1,0 +1,33 @@
+.logo {
+  user-select: none;
+
+  &[data-size='large'] {
+    font-size: 56px;
+  }
+  &[data-size='medium'] {
+    font-size: 24px;
+  }
+  &[data-size='small'] {
+    font-size: 14px;
+  }
+
+  strong {
+    font-weight: 700;
+  }
+
+  .base {
+    color: var(--base-color);
+
+    &[data-variant='inverted'] {
+      color: var(--light);
+    }
+  }
+
+  .light {
+    color: var(--light);
+
+    &[data-variant='inverted'] {
+      color: var(--background);
+    }
+  }
+}

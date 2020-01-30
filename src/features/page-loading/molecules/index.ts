@@ -1,1 +1,1 @@
-export { PageSpinner } from './page-spinner';
+export { PageLoader } from './page-loader';

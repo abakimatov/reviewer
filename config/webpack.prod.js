@@ -1,4 +1,6 @@
 const merge = require('webpack-merge');
+const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
 const Dotenv = require('dotenv-webpack');
@@ -14,7 +16,7 @@ module.exports = merge(common, {
   },
   optimization: {
     moduleIds: 'hashed',
-    runtimeChunk: 'single',
+    runtimeChunk: true,
     splitChunks: {
       cacheGroups: {
         vendor: {
@@ -26,9 +28,20 @@ module.exports = merge(common, {
     }
   },
   plugins: [
-    new BundleAnalyzerPlugin(),
+    new BundleAnalyzerPlugin({
+      excludeAssets: true
+    }),
     new Dotenv({
       path: resolvePath('.env.production')
+    }),
+    new webpack.HashedModuleIdsPlugin({
+      hashFunction: 'sha256',
+      hashDigest: 'hex',
+      hashDigestLength: 20
+    }),
+    new MiniCssExtractPlugin({
+      filename: '[name].bundle.css',
+      chunkFilename: '[id].css'
     })
   ]
 });
