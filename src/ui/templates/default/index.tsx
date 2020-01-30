@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Container, Header, Content } from 'rsuite';
 
-import s from './styles.scss';
+import s from './styles.pcss';
 
 type Props = {
   header?: React.ReactNode;

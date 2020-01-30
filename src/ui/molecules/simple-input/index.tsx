@@ -2,7 +2,7 @@ import * as React from 'react';
 import { InputGroup, Input, Icon } from 'rsuite';
 
 import { InputError } from '../../atoms';
-import s from './styles.scss';
+import s from './styles.pcss';
 
 type Props = {
   type: string;

@@ -7,7 +7,7 @@ import { DefaultLayout, Header, Empty } from '@ui';
 import { $teams, pageMounted, removeTeamStarted } from './models/teams';
 import { modalOpened } from './models/new-team';
 import { TeamCard, RemoveModal, CreateModal } from './organisms';
-import s from './styles.scss';
+import s from './styles.pcss';
 
 const Teams: React.FC = (): JSX.Element => {
   const teams: Team[] = useStore($teams);

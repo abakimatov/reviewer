@@ -3,7 +3,7 @@ import * as ReactDOM from 'react-dom';
 import { Router } from 'react-router-dom';
 import { history } from '@lib/routing';
 import '@theme/index.less';
-import '@theme/global.scss';
+import '@theme/global.pcss';
 import { App } from './app';
 
 const root = document.getElementById('root');

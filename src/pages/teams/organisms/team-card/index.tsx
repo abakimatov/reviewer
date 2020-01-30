@@ -6,7 +6,7 @@ import { Panel, Col, Button, IconButton, Icon } from 'rsuite';
 import { Team } from '@typings/team';
 import { routes } from '@lib/constants';
 import { CreatedDate, ParticipantsQuantity } from '../../molecules';
-import s from './styles.scss';
+import s from './styles.pcss';
 
 interface Props extends Team {
   readonly onRemove: Event<string>;

@@ -1,6 +1,6 @@
 import * as React from 'react';
 
-import s from './styles.scss';
+import s from './styles.pcss';
 
 interface Props {
   readonly children: React.ReactNode;

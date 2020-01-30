@@ -2,7 +2,7 @@ import * as React from 'react';
 import { Icon } from 'rsuite';
 
 import { MessageText } from '../../atoms';
-import s from './styles.scss';
+import s from './styles.pcss';
 
 interface Props {
   readonly msg: string;

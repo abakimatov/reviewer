@@ -5,7 +5,7 @@ import { Header as RHeader, Navbar, Nav, Icon } from 'rsuite';
 import { HeaderAccount } from '@features/session';
 import { routes } from '@lib/constants';
 import { Logo } from '../../atoms';
-import s from './styles.scss';
+import s from './styles.pcss';
 
 export const Header: React.FC = (): JSX.Element => {
   const { pathname } = useLocation();

@@ -1,5 +1,6 @@
 const merge = require('webpack-merge');
 const webpack = require('webpack');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin')
 const BundleAnalyzerPlugin = require('webpack-bundle-analyzer')
   .BundleAnalyzerPlugin;
 const Dotenv = require('dotenv-webpack');
@@ -27,7 +28,9 @@ module.exports = merge(common, {
     }
   },
   plugins: [
-    new BundleAnalyzerPlugin(),
+    new BundleAnalyzerPlugin({
+      excludeAssets: true
+    }),
     new Dotenv({
       path: resolvePath('.env.production')
     }),
@@ -36,5 +39,9 @@ module.exports = merge(common, {
       hashDigest: 'hex',
       hashDigestLength: 20
     }),
+    new MiniCssExtractPlugin({
+      filename: '[name].bundle.css',
+      chunkFilename: '[id].css'
+    })
   ]
 });

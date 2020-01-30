@@ -29,7 +29,8 @@ module.exports = {
         use: ['html-loader']
       },
       {
-        test: /\.(css|scss)$/,
+        test: /\.(css|pcss)$/,
+        exclude: /node_modules/,
         use: [
           {
             loader: MiniCssExtractPlugin.loader,
@@ -37,8 +38,15 @@ module.exports = {
               hmr: process.env.NODE_ENV === 'development'
             }
           },
-          { loader: 'css-loader', options: { modules: true } },
-          'sass-loader'
+          { loader: 'css-loader', options: { modules: true, importLoaders: 1 } },
+          {
+            loader: 'postcss-loader',
+            options: {
+              config: {
+                path: resolvePath('./')
+              }
+            }
+          }
         ]
       },
       {
@@ -46,6 +54,14 @@ module.exports = {
         use: [
           MiniCssExtractPlugin.loader,
           'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              config: {
+                path: resolvePath('./')
+              }
+            }
+          },
           {
             loader: 'less-loader',
             options: {

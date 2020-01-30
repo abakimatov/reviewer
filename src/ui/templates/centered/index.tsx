@@ -1,7 +1,7 @@
 import * as React from 'react';
 import cx from 'classnames';
 
-import s from './styles.scss';
+import s from './styles.pcss';
 
 type Props = {
   children: React.ReactChild | React.ReactChild[];

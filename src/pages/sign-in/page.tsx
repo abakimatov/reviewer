@@ -22,7 +22,7 @@ import {
   formUnmounted,
   signInFetching
 } from './model';
-import s from './styles.scss';
+import s from './styles.pcss';
 
 const SignIn: React.FC = (): JSX.Element => {
   const formRef = React.useRef(null);

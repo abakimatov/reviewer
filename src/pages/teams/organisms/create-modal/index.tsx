@@ -10,7 +10,7 @@ import {
   createTeamFetching,
   formSubmitted
 } from '../../models/new-team';
-import s from './styles.scss';
+import s from './styles.pcss';
 
 export const CreateModal: React.FC = (): JSX.Element => {
   const isModalOpen: boolean = useStore($isModalOpen);
