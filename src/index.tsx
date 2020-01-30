@@ -1,10 +1,9 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
-import * as firebase from 'firebase/app';
 import { Router } from 'react-router-dom';
-import 'react-toastify/dist/ReactToastify.css';
-
 import { history } from '@lib/routing';
+import '@theme/index.less';
+import '@theme/global.pcss';
 import { App } from './app';
 
 const root = document.getElementById('root');

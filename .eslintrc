@@ -22,7 +22,8 @@
     ],
     "import/prefer-default-export": 0,
     "no-unused-vars": 0,
-    "prettier/prettier": ["error"]
+    "prettier/prettier": 1,
+    "spaced-comment": 0
   },
   "settings": {
     "import/parsers": {

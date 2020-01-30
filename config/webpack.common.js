@@ -1,7 +1,6 @@
 const webpack = require('webpack');
-const path = require('path');
-const fs = require('fs');
 const HtmlWebPackPlugin = require('html-webpack-plugin');
+const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 const { CleanWebpackPlugin } = require('clean-webpack-plugin');
 const { resolvePath } = require('./resolvePath');
 
@@ -30,8 +29,49 @@ module.exports = {
         use: ['html-loader']
       },
       {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
+        test: /\.(css|pcss)$/,
+        exclude: /node_modules/,
+        use: [
+          {
+            loader: MiniCssExtractPlugin.loader,
+            options: {
+              hmr: process.env.NODE_ENV === 'development'
+            }
+          },
+          { loader: 'css-loader', options: { modules: true, importLoaders: 1 } },
+          {
+            loader: 'postcss-loader',
+            options: {
+              config: {
+                path: resolvePath('./')
+              }
+            }
+          }
+        ]
+      },
+      {
+        test: /\.less$/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          'css-loader',
+          {
+            loader: 'postcss-loader',
+            options: {
+              config: {
+                path: resolvePath('./')
+              }
+            }
+          },
+          {
+            loader: 'less-loader',
+            options: {
+              javascriptEnabled: true,
+              prependData: `@require '${resolvePath(
+                'src/ui/theme/global.scss'
+              )}'`
+            }
+          }
+        ]
       },
       {
         test: /\.(png|svg|jpg|gif)$/,
@@ -64,6 +104,7 @@ module.exports = {
     }),
     new HtmlWebPackPlugin({
       template: resolvePath('public/index.html')
-    })
+    }),
+    new MiniCssExtractPlugin()
   ]
 };

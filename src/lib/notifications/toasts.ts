@@ -1,7 +1,7 @@
 import { ReactText } from 'react';
-import { toast } from 'react-toastify';
+import { Alert } from 'rsuite';
 
-export const notifySuccess = (msg: string): ReactText => toast.success(msg);
-export const notifyError = (msg: string): ReactText => toast.error(msg);
-export const notifyWarn = (msg: string): ReactText => toast.warn(msg);
-export const notifyInfo = (msg: string): ReactText => toast.info(msg);
+export const notifySuccess = (msg: string): void => Alert.success(msg);
+export const notifyError = (msg: string): void => Alert.error(msg);
+export const notifyWarn = (msg: string): void => Alert.warning(msg);
+export const notifyInfo = (msg: string): void => Alert.info(msg);

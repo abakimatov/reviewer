@@ -1,1 +1,1 @@
-export { HeaderAccountActions } from './header-account-actions';
+export { HeaderAccount } from './header-account';

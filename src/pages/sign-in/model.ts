@@ -6,12 +6,10 @@ import {
   createEvent,
   createStore,
   createEffect,
-  createStoreObject,
   sample,
-  combine,
-  forward,
   guard
 } from 'effector';
+import { Schema } from 'rsuite';
 
 import { history } from '@lib/routing';
 import { firebase } from '@lib/firebase';
@@ -26,22 +24,35 @@ type SignInForm = {
   password: string;
 };
 
-type SignInFormStore = Store<{
-  email: string;
-  password: string;
-}>;
-
-type ErrorsSchema = {
-  email: string | null;
-  password: string | null;
+type Errors = {
+  email?: string;
+  password?: string;
 };
 
-export const emailChanged = createEvent<ChangeEvent<HTMLInputElement>>();
-export const passwordChanged = createEvent<ChangeEvent<HTMLInputElement>>();
-export const formSubmitted = createEvent();
-export const formValidated: Event<ErrorsSchema> = createEvent();
-export const formMounted = createEvent();
-export const formUnmounted = createEvent();
+const { StringType } = Schema.Types;
+
+export const validationSchema = Schema.Model({
+  email: StringType()
+    .isRequired('Пожалуйста, введите email.')
+    .isEmail('Пожалуйста, введите корректный email.'),
+  password: StringType().isRequired('Пожалуйста, введите пароль')
+});
+
+export const $formValues: Store<SignInForm> = createStore({
+  email: '',
+  password: ''
+});
+export const $formErrors: Store<Errors> = createStore({});
+export const $isFormValid: Store<boolean> = $formErrors.map(
+  errors => Object.keys(errors).length === 0
+);
+
+export const formChanged: Event<SignInForm> = createEvent();
+export const formValidated: Event<Errors> = createEvent();
+export const formSubmitted: Event<void> = createEvent();
+export const formSended: Event<void> = createEvent();
+export const formMounted: Event<void> = createEvent();
+export const formUnmounted: Event<void> = createEvent();
 
 export const signInFx: Effect<
   SignInForm,
@@ -50,57 +61,12 @@ export const signInFx: Effect<
 > = createEffect();
 export const signInFetching: Fetching = createFetching(signInFx);
 
-export const $email: Store<string> = createStore<string>('');
-export const $password: Store<string> = createStore<string>('');
-export const $emailError: Store<string | null> = createStore<string | null>(
-  null
-);
-export const $passwordError: Store<string | null> = createStore<string | null>(
-  null
-);
-export const $isEmailCorrect: Store<boolean> = $emailError.map(
-  state => state === null
-);
-export const $isPasswordCorrect: Store<boolean> = $passwordError.map(
-  state => state === null
-);
-const $signInForm: SignInFormStore = createStoreObject({
-  email: $email,
-  password: $password
-});
-const $isFormValid: Store<boolean> = combine(
-  $isEmailCorrect,
-  $isPasswordCorrect,
-  (isEmailCorrect, isPasswordCorrect) => isEmailCorrect && isPasswordCorrect
-);
-
-const trimEvent = (e: ChangeEvent<HTMLInputElement>): string =>
-  e.target.value.trim();
-
-$email
-  .on(emailChanged.map(trimEvent), (_, value): string => value)
-  .reset(formMounted)
-  .reset(formUnmounted);
-$password
-  .on(passwordChanged.map(trimEvent), (_, value): string => value)
-  .reset(formMounted)
-  .reset(formUnmounted);
-$emailError.on(formValidated, (_, { email }) => validateEmail(email));
-$passwordError.on(formValidated, (_, { password }) =>
-  password.length > 0 ? null : 'Пожалуйста, введите пароль.'
-);
-$signInForm.reset(formMounted).reset(formUnmounted);
-
-forward({
-  from: sample($signInForm, formSubmitted),
-  to: formValidated
-});
-
-guard({
-  source: formValidated,
-  filter: $isFormValid,
-  target: signInFx
-});
+$formValues
+  .on(formChanged, (_, values) => values)
+  .reset(formMounted, formUnmounted);
+$formErrors
+  .on(formValidated, (_, errors) => errors)
+  .reset(formMounted, formUnmounted);
 
 signInFx.use(({ email, password }: SignInForm) => signInUser(email, password));
 
@@ -111,4 +77,16 @@ signInFx.done.watch(() => {
 signInFx.fail.watch(({ error }) => {
   const errorText: string = getErrorText(error.code, authErrors);
   notifyError(errorText);
+});
+
+guard({
+  source: formSubmitted,
+  filter: $isFormValid,
+  target: formSended
+});
+
+sample({
+  source: $formValues,
+  clock: formSended,
+  target: signInFx
 });
